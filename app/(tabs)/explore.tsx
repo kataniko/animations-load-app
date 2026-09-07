@@ -1,110 +1,256 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
+import type { Href } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppTheme } from '@/context/ThemeContext';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+const experiments = [
+  { name: 'Motion Orb 3D', detail: 'React Three Fiber · cena em tempo real', icon: 'view-in-ar', ready: true, href: '/(tabs)/three' as const },
+  { name: 'Feed reveal', detail: 'Reanimated · entrada stagger', icon: 'vertical-align-bottom', ready: true },
+  { name: 'Like burst', detail: 'Reanimated · spring + partículas', icon: 'favorite-border', ready: true },
+  { name: 'Button Motion', detail: 'Reanimated · press, state e números', icon: 'touch-app', ready: true, href: '/(tabs)/buttons' as const },
+  { name: 'Animation Gallery', detail: 'Reanimated · Gesture Handler · Skia', icon: 'auto-awesome', ready: true, href: '/(tabs)/gallery' as const },
+];
 
-export default function TabTwoScreen() {
+export default function LabScreen() {
+  const { theme } = useAppTheme();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <View style={[styles.background, { backgroundColor: theme.background }]}>
+      <SafeAreaView style={[styles.screen, { backgroundColor: theme.background }]}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.kicker}>Animation lab</Text>
+              <Text style={[styles.title, { color: theme.text }]}>Explora cada animação.</Text>
+            </View>
+            <Pressable accessibilityRole="button" onPress={() => router.push('/(tabs)/three')} style={styles.headerButton}>
+              <MaterialIcons name="view-in-ar" size={24} color="#fff7fb" />
+            </Pressable>
+          </View>
+
+          <View style={styles.previewPanel}>
+            <View style={styles.phoneTop}>
+              <View style={styles.cameraDot} />
+            </View>
+            <View style={styles.previewCardLarge}>
+              <View style={styles.previewAvatar} />
+              <View style={styles.previewLines}>
+                <View style={[styles.previewLine, styles.previewLineLong]} />
+                <View style={[styles.previewLine, styles.previewLineShort]} />
+              </View>
+            </View>
+            <View style={styles.motionTrack}>
+              <View style={styles.motionBlock} />
+              <View style={[styles.motionBlock, styles.motionBlockMiddle]} />
+              <View style={[styles.motionBlock, styles.motionBlockEnd]} />
+            </View>
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>Experiências</Text>
+            <Text style={styles.sectionMeta}>6 demos</Text>
+          </View>
+
+          {experiments.map((item) => (
+            <Pressable
+              key={item.name}
+              onPress={() => item.href && router.push(item.href as Href)}
+              style={[styles.experimentRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              <View style={styles.experimentIcon}>
+                <MaterialIcons name={item.icon as keyof typeof MaterialIcons.glyphMap} size={22} color="#f09ad6" />
+              </View>
+              <View style={styles.experimentCopy}>
+                <Text style={styles.experimentName}>{item.name}</Text>
+                <Text style={styles.experimentDetail}>{item.detail}</Text>
+              </View>
+              <View style={[styles.statusBadge, item.ready && styles.statusBadgeReady]}>
+                <Text style={[styles.statusText, item.ready && styles.statusTextReady]}>
+                  {item.ready ? 'Ready' : 'Draft'}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  background: {
+    flex: 1,
+    backgroundColor: '#0d0a12',
   },
-  titleContainer: {
+  screen: {
+    backgroundColor: 'rgba(8, 6, 12, 0.5)',
+    flex: 1,
+  },
+  content: {
+    padding: 18,
+    paddingBottom: 32,
+  },
+  header: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
-    gap: 8,
+    gap: 18,
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  kicker: {
+    color: '#f09ad6',
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0,
+    textTransform: 'uppercase',
+  },
+  title: {
+    color: '#fff7fb',
+    fontSize: 32,
+    fontWeight: '900',
+    lineHeight: 36,
+    marginTop: 8,
+  },
+  headerButton: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    borderRadius: 22,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  previewPanel: {
+    backgroundColor: 'rgba(255, 255, 255, 0.14)',
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    borderRadius: 24,
+    borderWidth: 1,
+    marginTop: 24,
+    overflow: 'hidden',
+    padding: 18,
+  },
+  phoneTop: {
+    alignItems: 'center',
+    height: 22,
+  },
+  cameraDot: {
+    backgroundColor: 'rgba(255, 255, 255, 0.28)',
+    borderRadius: 4,
+    height: 8,
+    width: 48,
+  },
+  previewCardLarge: {
+    backgroundColor: 'rgba(13, 10, 18, 0.74)',
+    borderRadius: 18,
+    flexDirection: 'row',
+    gap: 12,
+    padding: 14,
+  },
+  previewAvatar: {
+    backgroundColor: '#f09ad6',
+    borderRadius: 20,
+    height: 40,
+    width: 40,
+  },
+  previewLines: {
+    flex: 1,
+    gap: 10,
+    justifyContent: 'center',
+  },
+  previewLine: {
+    backgroundColor: 'rgba(255, 247, 251, 0.32)',
+    borderRadius: 5,
+    height: 10,
+  },
+  previewLineLong: {
+    width: '92%',
+  },
+  previewLineShort: {
+    width: '58%',
+  },
+  motionTrack: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 14,
+  },
+  motionBlock: {
+    backgroundColor: 'rgba(240, 154, 214, 0.62)',
+    borderRadius: 16,
+    height: 72,
+    flex: 1,
+  },
+  motionBlockMiddle: {
+    backgroundColor: 'rgba(141, 162, 255, 0.58)',
+    transform: [{ translateY: 12 }],
+  },
+  motionBlockEnd: {
+    backgroundColor: 'rgba(246, 208, 136, 0.58)',
+    transform: [{ translateY: 24 }],
+  },
+  sectionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
+  sectionTitle: {
+    color: '#fff7fb',
+    fontSize: 19,
+    fontWeight: '900',
+  },
+  sectionMeta: {
+    color: '#c8b7c9',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  experimentRow: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+    borderColor: 'rgba(255, 255, 255, 0.14)',
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
+    padding: 16,
+  },
+  experimentIcon: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(240, 154, 214, 0.18)',
+    borderRadius: 21,
+    height: 42,
+    justifyContent: 'center',
+    width: 42,
+  },
+  experimentCopy: {
+    flex: 1,
+  },
+  experimentName: {
+    color: '#fff7fb',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  experimentDetail: {
+    color: '#c8b7c9',
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 3,
+  },
+  statusBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.14)',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  statusBadgeReady: {
+    backgroundColor: 'rgba(240, 154, 214, 0.24)',
+  },
+  statusText: {
+    color: '#c8b7c9',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  statusTextReady: {
+    color: '#f09ad6',
   },
 });

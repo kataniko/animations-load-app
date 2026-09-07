@@ -1,0 +1,225 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import Animated, {
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+
+import {
+  useAnimatedThemeBackground,
+  useAnimatedThemeBorder,
+  useAnimatedThemeColor,
+  useAppTheme,
+} from '@/context/ThemeContext';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
+export default function ButtonsScreen() {
+  const { theme } = useAppTheme();
+  const backgroundStyle = useAnimatedThemeBackground('#17191c', '#f5f5f5');
+  const textStyle = useAnimatedThemeColor('#f5f5f5', '#17191c');
+  const mutedStyle = useAnimatedThemeColor('#9da3a8', '#697078');
+  const surfaceStyle = useAnimatedThemeBackground('#23262a', '#ffffff');
+  const borderStyle = useAnimatedThemeBorder('rgba(255,255,255,0.10)', 'rgba(23,25,28,0.12)');
+
+  return (
+    <Animated.View style={[styles.screen, { backgroundColor: theme.background }, backgroundStyle]}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <Pressable accessibilityRole="button" onPress={() => router.back()} style={[styles.backButton, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <MaterialIcons name="arrow-back" size={22} color={theme.text} />
+          </Pressable>
+          <Text style={[styles.kicker, { color: theme.accent }]}>Reanimated</Text>
+          <Animated.Text style={[styles.title, { color: theme.text }, textStyle]}>Button Motion</Animated.Text>
+          <Animated.Text style={[styles.subtitle, { color: theme.textMuted }, mutedStyle]}>
+            Pequenas interações que tornam cada toque mais claro.
+          </Animated.Text>
+        </View>
+
+        <Animated.ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <DemoPanel title="Spring press" library="Reanimated" surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <SpringButton color={theme.accent} textColor={theme.accentText} />
+          </DemoPanel>
+
+          <DemoPanel title="State transition" library="Reanimated" surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <LoadingButton color={theme.accent} textColor={theme.accentText} />
+          </DemoPanel>
+
+          <DemoPanel title="Icon feedback" library="Reanimated" surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <IconButton color={theme.accent} textColor={theme.accentText} />
+          </DemoPanel>
+
+          <DemoPanel title="Animate number" library="Reanimated · alternativa gratuita" surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <AnimatedNumberDemo theme={theme} />
+          </DemoPanel>
+        </Animated.ScrollView>
+      </SafeAreaView>
+    </Animated.View>
+  );
+}
+
+function DemoPanel({
+  title,
+  library,
+  surfaceStyle,
+  borderStyle,
+  children,
+}: {
+  title: string;
+  library: string;
+  surfaceStyle: object;
+  borderStyle: object;
+  children: ReactNode;
+}) {
+  const { theme } = useAppTheme();
+
+  return (
+    <Animated.View style={[styles.panel, { backgroundColor: theme.surface, borderColor: theme.border }, surfaceStyle, borderStyle]}>
+      <View style={styles.panelHeader}>
+        <Animated.Text style={[styles.panelTitle, { color: theme.text }]}>{title}</Animated.Text>
+        <Animated.Text style={[styles.library, { color: theme.accent }]}>{library}</Animated.Text>
+      </View>
+      {children}
+    </Animated.View>
+  );
+}
+
+function SpringButton({ color, textColor }: { color: string; textColor: string }) {
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  return (
+    <AnimatedPressable
+      onPress={() => {
+        // Reanimated shared values are intentionally mutable.
+        // eslint-disable-next-line react-hooks/immutability
+        scale.value = withSequence(withSpring(1.08), withSpring(1));
+      }}
+      onPressIn={() => {
+        // eslint-disable-next-line react-hooks/immutability
+        scale.value = withSpring(0.94);
+      }}
+      onPressOut={() => {
+        // eslint-disable-next-line react-hooks/immutability
+        scale.value = withSpring(1);
+      }}
+      style={[styles.demoButton, { backgroundColor: color }, animatedStyle]}>
+      <Text style={[styles.demoButtonText, { color: textColor }]}>Press me</Text>
+    </AnimatedPressable>
+  );
+}
+
+function LoadingButton({ color, textColor }: { color: string; textColor: string }) {
+  const [loading, setLoading] = useState(false);
+
+  function press() {
+    if (loading) return;
+    setLoading(true);
+    setTimeout(() => setLoading(false), 900);
+  }
+
+  return (
+    <Pressable onPress={press} style={[styles.demoButton, { backgroundColor: color }]}>
+      {loading ? (
+        <Text style={[styles.demoButtonText, { color: textColor }]}>Loading…</Text>
+      ) : (
+        <Text style={[styles.demoButtonText, { color: textColor }]}>Save changes</Text>
+      )}
+    </Pressable>
+  );
+}
+
+function IconButton({ color, textColor }: { color: string; textColor: string }) {
+  const [active, setActive] = useState(false);
+  const rotation = useSharedValue(0);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }, { scale: active ? 1.08 : 1 }],
+  }));
+
+  function press() {
+    setActive((current) => !current);
+    rotation.value = withSequence(withSpring(20), withSpring(0));
+  }
+
+  return (
+    <AnimatedPressable onPress={press} style={[styles.iconButton, { backgroundColor: color }, animatedStyle]}>
+      <MaterialIcons name={active ? 'favorite' : 'favorite-border'} size={24} color={textColor} />
+    </AnimatedPressable>
+  );
+}
+
+function AnimatedNumberDemo({ theme }: { theme: { text: string; textMuted: string; accent: string; accentText: string } }) {
+  const [number, setNumber] = useState(128);
+  const value = useSharedValue(128);
+  const animatedProps = useAnimatedProps(() => ({
+    text: `${Math.round(value.value)}`,
+  } as any));
+
+  function changeBy(amount: number) {
+    const next = Math.max(0, number + amount);
+    setNumber(next);
+    // Reanimated shared values are intentionally mutable.
+    // eslint-disable-next-line react-hooks/immutability
+    value.value = withTiming(next, { duration: 450 });
+  }
+
+  return (
+    <View style={styles.numberDemo}>
+      <AnimatedTextInput
+        accessibilityLabel="Animated number"
+        animatedProps={animatedProps}
+        defaultValue="128"
+        editable={false}
+        style={[styles.number, { color: theme.text }]}
+      />
+      <View style={styles.numberControls}>
+        <Pressable onPress={() => changeBy(-1)} style={[styles.numberButton, { borderColor: theme.accent }]}>
+          <MaterialIcons name="remove" size={20} color={theme.accent} />
+        </Pressable>
+        <Text style={[styles.numberHint, { color: theme.textMuted }]}>withTiming</Text>
+        <Pressable onPress={() => changeBy(1)} style={[styles.numberButton, { backgroundColor: theme.accent }]}>
+          <MaterialIcons name="add" size={20} color={theme.accentText} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1 },
+  safeArea: { flex: 1 },
+  header: { padding: 20, paddingTop: 12 },
+  backButton: {
+    alignItems: 'center',
+    borderRadius: 18,
+    borderWidth: 1,
+    height: 40,
+    justifyContent: 'center',
+    marginBottom: 22,
+    width: 40,
+  },
+  kicker: { fontSize: 12, fontWeight: '900', letterSpacing: 1.4, textTransform: 'uppercase' },
+  title: { fontSize: 34, fontWeight: '900', marginTop: 6 },
+  subtitle: { fontSize: 15, lineHeight: 22, marginTop: 12 },
+  content: { gap: 14, padding: 20, paddingTop: 0, paddingBottom: 130 },
+  panel: { borderRadius: 22, borderWidth: 1, padding: 16 },
+  panelHeader: { alignItems: 'flex-start', gap: 5, marginBottom: 16 },
+  panelTitle: { fontSize: 18, fontWeight: '900' },
+  library: { fontSize: 11, fontWeight: '800' },
+  demoButton: { alignItems: 'center', borderRadius: 18, justifyContent: 'center', minHeight: 52, paddingHorizontal: 20 },
+  demoButtonText: { fontSize: 15, fontWeight: '900' },
+  iconButton: { alignItems: 'center', borderRadius: 18, height: 52, justifyContent: 'center', width: 52 },
+  numberDemo: { alignItems: 'center' },
+  number: { fontSize: 54, fontWeight: '900', padding: 0, textAlign: 'center', width: 180 },
+  numberControls: { alignItems: 'center', flexDirection: 'row', gap: 14, marginTop: 10 },
+  numberButton: { alignItems: 'center', borderRadius: 17, borderWidth: 1, height: 36, justifyContent: 'center', width: 36 },
+  numberHint: { fontSize: 12, fontWeight: '800' },
+});

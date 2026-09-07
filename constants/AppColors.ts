@@ -1,0 +1,18 @@
+export const appColors = {
+  background: '#0d0a12',
+  text: '#fff7fb',
+  textMuted: '#d9c9da',
+  textSubtle: '#c8b7c9',
+  pink: '#f09ad6',
+  pinkSoft: 'rgba(240, 154, 214, 0.36)',
+  orange: '#f78442',
+  orangeSoft: 'rgba(247, 132, 66, 0.18)',
+  lavender: '#8da2ff',
+  gold: '#f6d088',
+  glass: 'rgba(255, 255, 255, 0.14)',
+  glassStrong: 'rgba(255, 255, 255, 0.18)',
+  glassDark: 'rgba(13, 10, 18, 0.94)',
+  border: 'rgba(255, 255, 255, 0.12)',
+  tabInactive: '#8f8395',
+  tabDivider: 'rgba(255, 255, 255, 0.06)',
+};

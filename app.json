@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "animations-load-app",
+    "name": "Animation Showcase",
     "slug": "animations-load-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.animationsloadapp"
     },
     "web": {
       "bundler": "metro",
@@ -31,9 +32,11 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#0d0a12"
         }
-      ]
+      ],
+      "expo-font",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
