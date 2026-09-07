@@ -9,14 +9,14 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { BorderBeam, InnerBeamGlow } from '@/components/BorderBeam';
-import { ThinkingOrb } from '@/components/ThinkingOrb';
 import type { OrbState } from '@/components/ThinkingOrb';
+import { ThinkingOrb } from '@/components/ThinkingOrb';
 
 import {
-  useAnimatedThemeBackground,
-  useAnimatedThemeBorder,
-  useAnimatedThemeColor,
-  useAppTheme,
+    useAnimatedThemeBackground,
+    useAnimatedThemeBorder,
+    useAnimatedThemeColor,
+    useAppTheme,
 } from '@/context/ThemeContext';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);

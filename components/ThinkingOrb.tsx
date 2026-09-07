@@ -1,10 +1,10 @@
-import { Canvas, createPicture, PaintStyle, Picture, Skia } from '@shopify/react-native-skia';
 import type { SkPicture } from '@shopify/react-native-skia';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, AppState, View } from 'react-native';
+import { Canvas, createPicture, PaintStyle, Picture, Skia } from '@shopify/react-native-skia';
+import { useEffect, useMemo, useState } from 'react';
 import type { ViewStyle } from 'react-native';
-import { MODE_FRAMES, resolvePreset } from 'thinking-orbs/engine';
+import { AccessibilityInfo, AppState, View } from 'react-native';
 import type { OrbState } from 'thinking-orbs/engine';
+import { MODE_FRAMES, resolvePreset } from 'thinking-orbs/engine';
 
 export type { OrbState } from 'thinking-orbs/engine';
 
@@ -77,11 +77,11 @@ export function ThinkingOrb({
   const appActive = useAppActive();
   const [picture, setPicture] = useState<SkPicture | null>(null);
   const paints = useMemo(() => ({ fill: Skia.Paint(), stroke: Skia.Paint() }), []);
-  const rgba = useRef(new Float32Array(4)).current;
   const { mode, speed: presetSpeed, opts } = useMemo(() => resolvePreset(state, size), [size, state]);
   const effectiveSpeed = presetSpeed * speed;
 
   useEffect(() => {
+    const rgba = new Float32Array(4);
     const { fill, stroke } = paints;
     fill.setAntiAlias(true);
     stroke.setAntiAlias(true);
@@ -134,7 +134,7 @@ export function ThinkingOrb({
       running = false;
       cancelAnimationFrame(animationFrame);
     };
-  }, [appActive, dark, effectiveSpeed, mode, opts, paints, paused, reducedMotion, rgba, size]);
+  }, [appActive, dark, effectiveSpeed, mode, opts, paints, paused, reducedMotion, size]);
 
   return (
     <View
