@@ -1,16 +1,16 @@
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
+import { GlassCard } from '@/components/GlassCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   return (
-    <ImageBackground
-      source={{ uri: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=1200&q=80' }}
-      resizeMode="cover"
-      style={styles.background}>
+    <View style={styles.background}>
+      <AnimatedGradientBackground />
       <SafeAreaView style={styles.screen}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.cover} />
-          <View style={styles.profileCard}>
+          <GlassCard style={styles.profileCard}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>L</Text>
             </View>
@@ -24,10 +24,10 @@ export default function ProfileScreen() {
               <Stat value="9.8K" label="Followers" />
               <Stat value="42" label="Shots" />
             </View>
-          </View>
+          </GlassCard>
         </ScrollView>
       </SafeAreaView>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -43,10 +43,10 @@ function Stat({ value, label }: { value: string; label: string }) {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: '#0d0a12',
+    backgroundColor: '#09090b',
   },
   screen: {
-    backgroundColor: 'rgba(8, 6, 12, 0.5)',
+    backgroundColor: 'transparent',
     flex: 1,
   },
   content: {
@@ -54,23 +54,20 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   cover: {
-    backgroundColor: 'rgba(240, 154, 214, 0.42)',
+    backgroundColor: 'rgba(255, 255, 255, 0.42)',
     borderColor: 'rgba(255, 255, 255, 0.16)',
     borderRadius: 24,
     borderWidth: 1,
     height: 138,
   },
   profileCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.14)',
-    borderColor: 'rgba(255, 255, 255, 0.16)',
     borderRadius: 22,
-    borderWidth: 1,
     marginTop: -32,
     padding: 18,
   },
   avatar: {
     alignItems: 'center',
-    backgroundColor: '#f09ad6',
+    backgroundColor: '#d4d4d4',
     borderColor: 'rgba(255, 247, 251, 0.24)',
     borderRadius: 35,
     borderWidth: 4,
@@ -79,24 +76,24 @@ const styles = StyleSheet.create({
     width: 70,
   },
   avatarText: {
-    color: '#170d17',
+    color: '#09090b',
     fontSize: 24,
     fontWeight: '900',
   },
   name: {
-    color: '#fff7fb',
+    color: '#fafafa',
     fontSize: 26,
     fontWeight: '900',
     marginTop: 14,
   },
   handle: {
-    color: '#c8b7c9',
+    color: '#a3a3a3',
     fontSize: 14,
     fontWeight: '700',
     marginTop: 2,
   },
   bio: {
-    color: '#f4eaf4',
+    color: '#dedede',
     fontSize: 15,
     fontWeight: '500',
     lineHeight: 22,
@@ -111,12 +108,12 @@ const styles = StyleSheet.create({
     minWidth: 72,
   },
   statValue: {
-    color: '#fff7fb',
+    color: '#fafafa',
     fontSize: 18,
     fontWeight: '900',
   },
   statLabel: {
-    color: '#c8b7c9',
+    color: '#a3a3a3',
     fontSize: 12,
     fontWeight: '700',
     marginTop: 2,

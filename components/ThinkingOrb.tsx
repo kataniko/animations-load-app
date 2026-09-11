@@ -2,7 +2,7 @@ import type { SkPicture } from '@shopify/react-native-skia';
 import { Canvas, createPicture, PaintStyle, Picture, Skia } from '@shopify/react-native-skia';
 import { useEffect, useMemo, useState } from 'react';
 import type { ViewStyle } from 'react-native';
-import { AccessibilityInfo, AppState, View } from 'react-native';
+import { AccessibilityInfo, AppState, Platform, View } from 'react-native';
 import type { OrbState } from 'thinking-orbs/engine';
 import { MODE_FRAMES, resolvePreset } from 'thinking-orbs/engine';
 
@@ -64,7 +64,7 @@ function useAppActive() {
   return active;
 }
 
-export function ThinkingOrb({
+function NativeThinkingOrb({
   state = 'working',
   size = 64,
   speed = 1,
@@ -148,4 +148,13 @@ export function ThinkingOrb({
       </Canvas>
     </View>
   );
+}
+
+export function ThinkingOrb(props: ThinkingOrbProps) {
+  if (Platform.OS === 'web') {
+    const size = props.size ?? 64;
+    return <View accessibilityRole="image" accessibilityLabel={props.accessibilityLabel ?? labels[props.state ?? 'working']} style={[{ backgroundColor: '#3B82F6', borderRadius: 999, height: size, opacity: 0.35, width: size }, props.style]} />;
+  }
+
+  return <NativeThinkingOrb {...props} />;
 }

@@ -4,11 +4,11 @@ import type { Href } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/context/ThemeContext';
+import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
+import { GlassPressable } from '@/components/GlassPressable';
 
 const experiments = [
   { name: 'Motion Orb 3D', detail: 'React Three Fiber · cena em tempo real', icon: 'view-in-ar', ready: true, href: '/(tabs)/three' as const },
-  { name: 'Feed reveal', detail: 'Reanimated · entrada stagger', icon: 'vertical-align-bottom', ready: true },
-  { name: 'Like burst', detail: 'Reanimated · spring + partículas', icon: 'favorite-border', ready: true },
   { name: 'Button Motion', detail: 'Reanimated · press, state e números', icon: 'touch-app', ready: true, href: '/(tabs)/buttons' as const },
   { name: 'Animation Gallery', detail: 'Reanimated · Gesture Handler · Skia', icon: 'auto-awesome', ready: true, href: '/(tabs)/gallery' as const },
 ];
@@ -18,7 +18,8 @@ export default function LabScreen() {
 
   return (
     <View style={[styles.background, { backgroundColor: theme.background }]}>
-      <SafeAreaView style={[styles.screen, { backgroundColor: theme.background }]}>
+      <AnimatedGradientBackground />
+      <SafeAreaView style={[styles.screen, { backgroundColor: 'transparent' }]}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <View>
@@ -26,7 +27,7 @@ export default function LabScreen() {
               <Text style={[styles.title, { color: theme.text }]}>Explora cada animação.</Text>
             </View>
             <Pressable accessibilityRole="button" onPress={() => router.push('/(tabs)/three')} style={styles.headerButton}>
-              <MaterialIcons name="view-in-ar" size={24} color="#fff7fb" />
+              <MaterialIcons name="view-in-ar" size={24} color="#fafafa" />
             </Pressable>
           </View>
 
@@ -50,16 +51,16 @@ export default function LabScreen() {
 
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: theme.text }]}>Experiências</Text>
-            <Text style={styles.sectionMeta}>6 demos</Text>
+            <Text style={styles.sectionMeta}>11 demos</Text>
           </View>
 
           {experiments.map((item) => (
-            <Pressable
+            <GlassPressable
               key={item.name}
               onPress={() => item.href && router.push(item.href as Href)}
-              style={[styles.experimentRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              style={styles.experimentRow}>
               <View style={styles.experimentIcon}>
-                <MaterialIcons name={item.icon as keyof typeof MaterialIcons.glyphMap} size={22} color="#f09ad6" />
+                <MaterialIcons name={item.icon as keyof typeof MaterialIcons.glyphMap} size={22} color="#d4d4d4" />
               </View>
               <View style={styles.experimentCopy}>
                 <Text style={styles.experimentName}>{item.name}</Text>
@@ -70,7 +71,7 @@ export default function LabScreen() {
                   {item.ready ? 'Ready' : 'Draft'}
                 </Text>
               </View>
-            </Pressable>
+            </GlassPressable>
           ))}
         </ScrollView>
       </SafeAreaView>
@@ -81,10 +82,10 @@ export default function LabScreen() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: '#0d0a12',
+    backgroundColor: '#09090b',
   },
   screen: {
-    backgroundColor: 'rgba(8, 6, 12, 0.5)',
+    backgroundColor: 'rgba(17, 17, 17, 0.5)',
     flex: 1,
   },
   content: {
@@ -99,14 +100,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   kicker: {
-    color: '#f09ad6',
+    color: '#d4d4d4',
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
   title: {
-    color: '#fff7fb',
+    color: '#fafafa',
     fontSize: 32,
     fontWeight: '900',
     lineHeight: 36,
@@ -140,14 +141,14 @@ const styles = StyleSheet.create({
     width: 48,
   },
   previewCardLarge: {
-    backgroundColor: 'rgba(13, 10, 18, 0.74)',
+    backgroundColor: 'rgba(17, 17, 17, 0.74)',
     borderRadius: 18,
     flexDirection: 'row',
     gap: 12,
     padding: 14,
   },
   previewAvatar: {
-    backgroundColor: '#f09ad6',
+    backgroundColor: '#d4d4d4',
     borderRadius: 20,
     height: 40,
     width: 40,
@@ -174,17 +175,17 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   motionBlock: {
-    backgroundColor: 'rgba(240, 154, 214, 0.62)',
+    backgroundColor: 'rgba(255, 255, 255, 0.62)',
     borderRadius: 16,
     height: 72,
     flex: 1,
   },
   motionBlockMiddle: {
-    backgroundColor: 'rgba(141, 162, 255, 0.58)',
+    backgroundColor: 'rgba(160, 160, 160, 0.58)',
     transform: [{ translateY: 12 }],
   },
   motionBlockEnd: {
-    backgroundColor: 'rgba(246, 208, 136, 0.58)',
+    backgroundColor: 'rgba(255, 255, 255, 0.58)',
     transform: [{ translateY: 24 }],
   },
   sectionHeader: {
@@ -194,21 +195,17 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   sectionTitle: {
-    color: '#fff7fb',
+    color: '#fafafa',
     fontSize: 19,
     fontWeight: '900',
   },
   sectionMeta: {
-    color: '#c8b7c9',
+    color: '#a3a3a3',
     fontSize: 13,
     fontWeight: '800',
   },
   experimentRow: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.13)',
-    borderColor: 'rgba(255, 255, 255, 0.14)',
-    borderRadius: 18,
-    borderWidth: 1,
     flexDirection: 'row',
     gap: 12,
     marginBottom: 12,
@@ -216,7 +213,7 @@ const styles = StyleSheet.create({
   },
   experimentIcon: {
     alignItems: 'center',
-    backgroundColor: 'rgba(240, 154, 214, 0.18)',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     borderRadius: 21,
     height: 42,
     justifyContent: 'center',
@@ -226,12 +223,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   experimentName: {
-    color: '#fff7fb',
+    color: '#fafafa',
     fontSize: 16,
     fontWeight: '900',
   },
   experimentDetail: {
-    color: '#c8b7c9',
+    color: '#a3a3a3',
     fontSize: 13,
     fontWeight: '600',
     marginTop: 3,
@@ -243,14 +240,14 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   statusBadgeReady: {
-    backgroundColor: 'rgba(240, 154, 214, 0.24)',
+    backgroundColor: 'rgba(255, 255, 255, 0.24)',
   },
   statusText: {
-    color: '#c8b7c9',
+    color: '#a3a3a3',
     fontSize: 12,
     fontWeight: '900',
   },
   statusTextReady: {
-    color: '#f09ad6',
+    color: '#d4d4d4',
   },
 });

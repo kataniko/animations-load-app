@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   },
   activeCircle: {
     alignItems: 'center',
-    backgroundColor: appColors.orange,
+    backgroundColor: appColors.secondary,
     borderColor: appColors.text,
     borderRadius: CIRCLE_SIZE / 2,
     borderWidth: 6,

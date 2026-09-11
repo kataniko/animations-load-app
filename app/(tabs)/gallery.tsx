@@ -4,11 +4,13 @@ import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { BorderBeam, InnerBeamGlow } from '@/components/BorderBeam';
+import { GlassCard } from '@/components/GlassCard';
+import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
 import type { OrbState } from '@/components/ThinkingOrb';
 import { ThinkingOrb } from '@/components/ThinkingOrb';
 
@@ -25,14 +27,28 @@ const orbStates: OrbState[] = ['working', 'searching', 'solving', 'listening', '
 
 export default function GalleryScreen() {
   const { theme } = useAppTheme();
-  const backgroundStyle = useAnimatedThemeBackground('#17191c', '#f5f5f5');
-  const textStyle = useAnimatedThemeColor('#f5f5f5', '#17191c');
-  const mutedStyle = useAnimatedThemeColor('#9da3a8', '#697078');
-  const surfaceStyle = useAnimatedThemeBackground('#23262a', '#ffffff');
+
+  const backgroundStyle = useAnimatedThemeBackground('#09090b', '#fafafa');
+  const textStyle = useAnimatedThemeColor('#fafafa', '#18181b');
+  const mutedStyle = useAnimatedThemeColor('#a1a1aa', '#71717a');
+  const surfaceStyle = useAnimatedThemeBackground('#18181b', '#ffffff');
   const borderStyle = useAnimatedThemeBorder('rgba(255,255,255,0.10)', 'rgba(23,25,28,0.12)');
+
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <AnimatedGradientBackground />
+        <SafeAreaView style={styles.safeArea}>
+          <Text style={[styles.title, { color: theme.text }]}>Animation Gallery</Text>
+          <Text style={[styles.subtitle, { color: theme.textMuted }]}>Os efeitos Skia estão disponíveis no iOS e Android.</Text>
+        </SafeAreaView>
+      </View>
+    );
+  }
 
   return (
     <Animated.View style={[styles.screen, { backgroundColor: theme.background }, backgroundStyle]}>
+      <AnimatedGradientBackground />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <Pressable accessibilityRole="button" onPress={() => router.back()} style={[styles.backButton, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -41,7 +57,7 @@ export default function GalleryScreen() {
           <Text style={[styles.kicker, { color: theme.accent }]}>Animation gallery</Text>
           <Animated.Text style={[styles.title, { color: theme.text }, textStyle]}>Make it move.</Animated.Text>
           <Animated.Text style={[styles.subtitle, { color: theme.textMuted }, mutedStyle]}>
-            Quatro interações para explorar diferentes formas de motion mobile.
+            Catálogo interativo com exemplos de Reanimated, Gestures, Skia e Blur.
           </Animated.Text>
         </View>
 
@@ -59,7 +75,7 @@ export default function GalleryScreen() {
           </GalleryPanel>
 
           <GalleryPanel title="Liquid blob" library="Skia + Reanimated" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
-            <LiquidBlob color={theme.accent} secondaryColor="#f09ad6" />
+            <LiquidBlob color={theme.accent} secondaryColor="#d4d4d4" />
           </GalleryPanel>
 
           <GalleryPanel title="Glass command card" library="BlurView + Reanimated" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
@@ -72,6 +88,18 @@ export default function GalleryScreen() {
 
           <GalleryPanel title="Beam input" library="Skia + Reanimated" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
             <BeamInput theme={theme} />
+          </GalleryPanel>
+
+          <GalleryPanel title="Sliding segmented pill" library="Reanimated · layout motion" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <SegmentedPillDemo theme={theme} />
+          </GalleryPanel>
+
+          <GalleryPanel title="3D tilt card" library="Gesture Handler + Reanimated" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <TiltCardDemo theme={theme} />
+          </GalleryPanel>
+
+          <GalleryPanel title="Elastic bottom sheet" library="Gesture Handler + Reanimated" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
+            <ElasticDrawerDemo theme={theme} />
           </GalleryPanel>
 
           <GalleryPanel title="AI glow input" library="Reanimated + BlurView" theme={theme} surfaceStyle={surfaceStyle} borderStyle={borderStyle}>
@@ -99,11 +127,11 @@ function GalleryPanel({
   children: ReactNode;
 }) {
   return (
-    <Animated.View style={[styles.panel, { backgroundColor: theme.surface, borderColor: theme.border }, surfaceStyle, borderStyle]}>
+    <GlassCard style={[styles.panel, surfaceStyle, borderStyle]}>
       <Animated.Text style={[styles.panelTitle, { color: theme.text }]}>{title}</Animated.Text>
       <Animated.Text style={[styles.library, { color: theme.accent }]}>{library}</Animated.Text>
       <View style={styles.demoArea}>{children}</View>
-    </Animated.View>
+    </GlassCard>
   );
 }
 
@@ -216,7 +244,7 @@ function OrbPlayground({
   return (
     <View style={styles.orbPlayground}>
       <View style={styles.orbStage}>
-        <ThinkingOrb state={state} size={size} paused={paused} dark={theme.background !== '#f5f5f5'} />
+        <ThinkingOrb state={state} size={size} paused={paused} dark={theme.background !== '#fafafa'} />
       </View>
 
       <View style={styles.orbStateGrid}>
@@ -282,7 +310,7 @@ function OrbPlayground({
               }}
               style={[styles.orbPill, { backgroundColor: theme.surfaceElevated, borderColor: selected ? theme.accent : theme.border }]}
             >
-              <ThinkingOrb state={button.state} size={20} paused={!selected} dark={theme.background !== '#f5f5f5'} />
+              <ThinkingOrb state={button.state} size={20} paused={!selected} dark={theme.background !== '#fafafa'} />
               <Text style={[styles.orbPillText, { color: theme.text }]}>{button.label}</Text>
             </Pressable>
           );
@@ -294,9 +322,9 @@ function OrbPlayground({
 
 function BeamInput({ theme }: { theme: { text: string; textMuted: string; accent: string; border: string; surface: string } }) {
   return (
-    <BorderBeam size="md" colorVariant="colorful" strength={0.7} borderRadius={18}>
+    <BorderBeam size="md" colorVariant="mono" strength={0.7} borderRadius={18}>
       <View style={[styles.beamCard, { borderColor: theme.border }]}> 
-        <InnerBeamGlow colorVariant="colorful" strength={0.7} borderRadius={16} />
+        <InnerBeamGlow colorVariant="mono" strength={0.7} borderRadius={16} />
         <View style={styles.mentionIcon}>
           <Text style={[styles.mentionText, { color: theme.textMuted }]}>@</Text>
         </View>
@@ -333,9 +361,110 @@ function GlowInput({ theme }: { theme: { text: string; textMuted: string; accent
           style={[styles.textInput, { color: theme.text }]}
         />
         <View style={[styles.sendButton, { backgroundColor: theme.accent }]}>
-          <MaterialIcons name="north-east" size={17} color="#17191c" />
+          <MaterialIcons name="north-east" size={17} color="#18181b" />
         </View>
       </View>
+    </View>
+  );
+}
+
+function SegmentedPillDemo({ theme }: { theme: { accent: string; accentText: string; text: string; textMuted: string; surfaceElevated: string } }) {
+  const tabs = ['All', 'Motion', 'Canvas', '3D'];
+  const [active, setActive] = useState(0);
+  const offset = useSharedValue(0);
+
+  const indicatorStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: offset.value }],
+  }));
+
+  const TAB_WIDTH = 70;
+
+  function selectTab(index: number) {
+    setActive(index);
+    offset.value = withSpring(index * TAB_WIDTH, { damping: 15, stiffness: 180 });
+  }
+
+  return (
+    <View style={[styles.segmentedTrack, { backgroundColor: theme.surfaceElevated }]}>
+      <Animated.View style={[styles.segmentedThumb, { width: TAB_WIDTH, backgroundColor: theme.accent }, indicatorStyle]} />
+      {tabs.map((tab, index) => {
+        const isSelected = active === index;
+        return (
+          <Pressable key={tab} onPress={() => selectTab(index)} style={[styles.segmentedItem, { width: TAB_WIDTH }]}>
+            <Text style={[styles.segmentedText, { color: isSelected ? theme.accentText : theme.textMuted }]}>{tab}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function TiltCardDemo({ theme }: { theme: { accent: string; text: string; textMuted: string; surfaceElevated: string; border: string } }) {
+  const rotateX = useSharedValue(0);
+  const rotateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  const cardStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 800 },
+      { rotateX: `${rotateX.value}deg` },
+      { rotateY: `${rotateY.value}deg` },
+      { scale: scale.value },
+    ],
+  }));
+
+  const pan = Gesture.Pan()
+    .onBegin(() => {
+      scale.value = withSpring(1.05);
+    })
+    .onUpdate((event) => {
+      rotateX.value = -event.translationY / 6;
+      rotateY.value = event.translationX / 6;
+    })
+    .onEnd(() => {
+      rotateX.value = withSpring(0, { damping: 14, stiffness: 160 });
+      rotateY.value = withSpring(0, { damping: 14, stiffness: 160 });
+      scale.value = withSpring(1);
+    });
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View style={[styles.tiltCard, { backgroundColor: theme.surfaceElevated, borderColor: theme.border }, cardStyle]}>
+        <View style={styles.tiltBadge}>
+          <MaterialIcons name="touch-app" size={16} color={theme.accent} />
+          <Text style={[styles.tiltBadgeText, { color: theme.accent }]}>3D Gyro/Tilt</Text>
+        </View>
+        <Text style={[styles.tiltTitle, { color: theme.text }]}>Interactive Depth</Text>
+        <Text style={[styles.tiltDesc, { color: theme.textMuted }]}>Drag fingers across the card to tilt perspective</Text>
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
+function ElasticDrawerDemo({ theme }: { theme: { accent: string; text: string; textMuted: string; surfaceElevated: string; border: string } }) {
+  const [open, setOpen] = useState(false);
+  const translateY = useSharedValue(0);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    translateY.value = withSpring(next ? -48 : 0, { damping: 12, stiffness: 180 });
+  }
+
+  return (
+    <View style={styles.drawerWrapper}>
+      <Pressable onPress={toggle} style={[styles.demoButton, { backgroundColor: theme.accent }]}>
+        <MaterialIcons name={open ? 'expand-less' : 'expand-more'} size={20} color="#18181b" />
+        <Text style={[styles.demoButtonText, { color: '#18181b' }]}>{open ? 'Close preview' : 'Peek content'}</Text>
+      </Pressable>
+      <Animated.View style={[styles.drawerPreview, { backgroundColor: theme.surfaceElevated, borderColor: theme.border }, style]}>
+        <View style={styles.drawerHandle} />
+        <Text style={[styles.drawerText, { color: theme.text }]}>Spring Elastic Sheet revealed</Text>
+      </Animated.View>
     </View>
   );
 }
@@ -372,7 +501,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 36, fontWeight: '900', marginTop: 6 },
   subtitle: { fontSize: 15, lineHeight: 22, marginTop: 12 },
   content: { gap: 14, padding: 20, paddingTop: 0, paddingBottom: 130 },
-  panel: { borderRadius: 22, borderWidth: 1, padding: 16 },
+  panel: { borderRadius: 22, padding: 16 },
   panelTitle: { fontSize: 18, fontWeight: '900' },
   library: { fontSize: 11, fontWeight: '800', marginTop: 4 },
   demoArea: { alignItems: 'center', minHeight: 92, justifyContent: 'center', marginTop: 16 },
@@ -384,7 +513,7 @@ const styles = StyleSheet.create({
   blobPressable: { alignItems: 'center', height: 112, justifyContent: 'center', width: '100%' },
   blob: { height: 112, width: 190 },
   canvas: { flex: 1 },
-  blobHint: { color: '#9da3a8', fontSize: 11, fontWeight: '800', position: 'absolute', bottom: 2 },
+  blobHint: { color: '#a1a1aa', fontSize: 11, fontWeight: '800', position: 'absolute', bottom: 2 },
   glassCard: { alignItems: 'center', borderColor: 'rgba(255,255,255,0.22)', borderRadius: 18, borderWidth: 1, flexDirection: 'row', gap: 12, overflow: 'hidden', padding: 14, width: '100%' },
   glassOrb: { borderRadius: 30, height: 80, opacity: 0.18, position: 'absolute', right: -20, top: -28, width: 80 },
   glassCopy: { flex: 1 },
@@ -418,4 +547,17 @@ const styles = StyleSheet.create({
   inputGlow: { borderRadius: 24, height: 72, opacity: 0.25, position: 'absolute', width: '92%' },
   glowInput: { alignItems: 'center', backgroundColor: 'rgba(35,38,42,0.94)', borderColor: 'rgba(255,255,255,0.16)', borderRadius: 18, borderWidth: 1, flexDirection: 'row', gap: 9, minHeight: 56, paddingHorizontal: 12, width: '100%' },
   sendButton: { alignItems: 'center', borderRadius: 13, height: 34, justifyContent: 'center', width: 34 },
+  segmentedTrack: { borderRadius: 14, flexDirection: 'row', height: 40, padding: 3, position: 'relative' },
+  segmentedThumb: { borderRadius: 11, bottom: 3, left: 3, position: 'absolute', top: 3 },
+  segmentedItem: { alignItems: 'center', justifyContent: 'center', zIndex: 1 },
+  segmentedText: { fontSize: 13, fontWeight: '700' },
+  tiltCard: { borderRadius: 20, borderWidth: 1, padding: 20, width: '92%' },
+  tiltBadge: { alignItems: 'center', flexDirection: 'row', gap: 6, marginBottom: 8 },
+  tiltBadgeText: { fontSize: 11, fontWeight: '800', letterSpacing: 0.5, textTransform: 'uppercase' },
+  tiltTitle: { fontSize: 18, fontWeight: '900' },
+  tiltDesc: { fontSize: 13, marginTop: 4 },
+  drawerWrapper: { alignItems: 'center', gap: 12, overflow: 'hidden', paddingBottom: 6, width: '100%' },
+  drawerPreview: { alignItems: 'center', borderRadius: 16, borderWidth: 1, height: 70, justifyContent: 'center', width: '92%' },
+  drawerHandle: { backgroundColor: '#71717a', borderRadius: 3, height: 4, marginBottom: 8, width: 36 },
+  drawerText: { fontSize: 13, fontWeight: '700' },
 });

@@ -3,12 +3,13 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { router } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/context/ThemeContext';
 import type { Group, Mesh } from 'three';
 
 import { appColors } from '@/constants/AppColors';
+import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
 
 const particleCount = 34;
 
@@ -16,17 +17,29 @@ export default function ThreeLabScreen() {
   const [isTurbo, setIsTurbo] = useState(false);
   const { theme } = useAppTheme();
 
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <AnimatedGradientBackground />
+        <SafeAreaView style={styles.overlay}>
+          <Text style={[styles.title, { color: theme.text }]}>Motion Orb</Text>
+          <Text style={[styles.infoLabel, { color: theme.textMuted }]}>A cena 3D está disponível no iOS e Android.</Text>
+        </SafeAreaView>
+      </View>
+    );
+  }
+
   return (
-    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+    <View style={[styles.screen, { backgroundColor: theme.background }]}> 
+      <AnimatedGradientBackground />
       <Canvas
         camera={{ fov: 48, position: [0, 0.25, 6.2] }}
-        gl={{ antialias: true }}
+        gl={{ alpha: true, antialias: true }}
         style={styles.canvas}>
-        <color attach="background" args={[theme.background]} />
         <ambientLight intensity={0.55} />
-        <directionalLight color="#fff7fb" intensity={2.2} position={[3.2, 4.4, 5]} />
-        <pointLight color={appColors.pink} intensity={28} position={[-3.2, 1.2, 3.4]} />
-        <pointLight color={appColors.lavender} intensity={16} position={[2.8, -1.4, 3.2]} />
+        <directionalLight color="#fafafa" intensity={2.2} position={[3.2, 4.4, 5]} />
+        <pointLight color={appColors.primary} intensity={28} position={[-3.2, 1.2, 3.4]} />
+        <pointLight color={appColors.secondary} intensity={16} position={[2.8, -1.4, 3.2]} />
         <MotionScene isTurbo={isTurbo} />
       </Canvas>
 
@@ -40,7 +53,7 @@ export default function ThreeLabScreen() {
             <Text style={[styles.title, { color: theme.text }]}>Motion Orb</Text>
           </View>
           <Pressable accessibilityRole="button" onPress={() => setIsTurbo((current) => !current)} style={styles.iconButton}>
-            <MaterialIcons name={isTurbo ? 'flash-on' : 'flash-off'} size={22} color={appColors.gold} />
+            <MaterialIcons name={isTurbo ? 'flash-on' : 'flash-off'} size={22} color={appColors.primary} />
           </Pressable>
         </View>
 
@@ -73,7 +86,7 @@ function MotionScene({ isTurbo }: { isTurbo: boolean }) {
 
         return {
           angle,
-          color: lane === 0 ? appColors.pink : lane === 1 ? appColors.gold : appColors.lavender,
+          color: lane === 0 ? appColors.primary : lane === 1 ? appColors.primary : appColors.secondary,
           radius,
           scale: 0.035 + (index % 5) * 0.008,
           y: (index % 7) * 0.18 - 0.54,
@@ -107,7 +120,7 @@ function MotionScene({ isTurbo }: { isTurbo: boolean }) {
     <group ref={group}>
       <mesh ref={core} position={[0, 0.06, 0]}>
         <icosahedronGeometry args={[1.08, 4]} />
-        <meshStandardMaterial color={appColors.orange} roughness={0.34} metalness={0.38} />
+        <meshStandardMaterial color={appColors.secondary} roughness={0.34} metalness={0.38} />
       </mesh>
 
       <mesh ref={ring} position={[0, 0.02, 0]}>
@@ -167,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   kicker: {
-    color: appColors.gold,
+    color: appColors.primary,
     fontSize: 12,
     fontWeight: '900',
     letterSpacing: 0,
@@ -202,7 +215,7 @@ const styles = StyleSheet.create({
   },
   modeButton: {
     alignItems: 'center',
-    backgroundColor: appColors.gold,
+    backgroundColor: appColors.primary,
     borderRadius: 18,
     flexDirection: 'row',
     gap: 6,

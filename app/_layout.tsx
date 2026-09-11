@@ -3,6 +3,7 @@ import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
 import { MaskedSplashScreen } from '@/components/MaskedSplashScreen';
@@ -43,7 +44,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
-        {showAnimatedSplash && <MaskedSplashScreen onFinish={handleSplashFinish} />}
+        {showAnimatedSplash && Platform.OS !== 'web' && <MaskedSplashScreen onFinish={handleSplashFinish} />}
         <StatusBar style="light" />
           </ThemeProvider>
         </AppThemeProvider>

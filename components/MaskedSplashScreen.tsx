@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   halo: {
-    backgroundColor: 'rgba(240, 154, 214, 0.16)',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
     borderColor: 'rgba(255, 255, 255, 0.16)',
     borderRadius: 118,
     borderWidth: 1,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   portalFill: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: appColors.pink,
+    backgroundColor: appColors.primary,
     overflow: 'hidden',
   },
   portalBeam: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-22deg' }],
   },
   portalBeamPink: {
-    backgroundColor: '#fff7fb',
+    backgroundColor: '#fafafa',
     height: height * 0.9,
     left: -width * 0.2,
     opacity: 0.82,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     width: width * 0.38,
   },
   portalBeamGold: {
-    backgroundColor: appColors.gold,
+    backgroundColor: appColors.primary,
     height: height * 0.72,
     opacity: 0.84,
     right: width * 0.02,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     width: width * 0.32,
   },
   portalBeamBlue: {
-    backgroundColor: appColors.lavender,
+    backgroundColor: appColors.secondary,
     bottom: -height * 0.08,
     height: height * 0.58,
     left: width * 0.32,

@@ -13,9 +13,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AddGlow } from '@/components/AddGlow';
+import { GlassCard } from '@/components/GlassCard';
 import {
   useAnimatedThemeBackground,
-  useAnimatedThemeBorder,
   useAnimatedThemeColor,
   useAppTheme,
 } from '@/context/ThemeContext';
@@ -62,8 +63,8 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
   const [step, setStep] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const { theme } = useAppTheme();
-  const navSurfaceStyle = useAnimatedThemeBackground('#23262a', '#ffffff');
-  const navBorderStyle = useAnimatedThemeBorder('rgba(255,255,255,0.10)', 'rgba(23,25,28,0.12)');
+  const actionBackgroundStyle = useAnimatedThemeBackground('#27272a', '#18181b');
+  const actionTextStyle = useAnimatedThemeColor('#ffffff', '#fafafa');
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const progress = useSharedValue(0);
@@ -90,7 +91,7 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
   }, [dragY, expanded]);
 
   const surfaceStyle = useAnimatedStyle(() => ({
-    borderRadius: interpolate(progress.value, [0, 1], [28, 24]),
+    borderRadius: 24,
     height: interpolate(progress.value, [0, 1], [COLLAPSED_HEIGHT, EXPANDED_HEIGHT]),
     width: interpolate(progress.value, [0, 1], [COLLAPSED_WIDTH, panelWidth]),
   }));
@@ -171,9 +172,8 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
 
   return (
     <View pointerEvents="box-none" style={[styles.wrapper, { paddingBottom: bottomInset }]}> 
-      <Animated.View
-        pointerEvents="auto"
-        style={[styles.surface, { backgroundColor: theme.surface, borderColor: theme.border }, navSurfaceStyle, navBorderStyle, surfaceStyle, sheetDragStyle]}>
+      <Animated.View pointerEvents="auto" style={[styles.surface, surfaceStyle, sheetDragStyle]}>
+        <GlassCard style={StyleSheet.absoluteFill}>{null}</GlassCard>
         <Animated.View pointerEvents={expanded ? 'none' : 'auto'} style={[styles.compactNav, compactNavStyle]}>
           <NavButton
             active={state.routes[state.index]?.name === homeRoute.name && !expanded}
@@ -270,12 +270,12 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
             }
           }}
           style={[styles.actionButtonHitbox, { width: expanded ? panelWidth : ACTION_SIZE }]}>
-          <Animated.View style={[styles.actionButton, { backgroundColor: theme.accent }, expanded && !selectedOption && styles.continueButtonDisabled, actionButtonStyle]}>
+          <Animated.View style={[styles.actionButton, { backgroundColor: expanded ? theme.surfaceElevated : 'transparent' }, expanded && actionBackgroundStyle, expanded && !selectedOption && styles.continueButtonDisabled, actionButtonStyle]}>
             <Animated.View style={plusStyle}>
-              <MaterialIcons name="add" size={24} color={theme.accentText} />
+              {!expanded ? <AddGlow size={28} /> : <MaterialIcons name="add" size={24} color={theme.accentText} />}
             </Animated.View>
             <Animated.View style={[styles.continueContent, continueStyle]}>
-              <Text style={styles.continueText}>{step === steps.length - 1 ? 'Open demo' : 'Continue'}</Text>
+              <Animated.Text style={[styles.continueText, actionTextStyle]}>{step === steps.length - 1 ? 'Open demo' : 'Continue'}</Animated.Text>
               <MaterialIcons name="chevron-right" size={24} color={theme.accentText} />
             </Animated.View>
           </Animated.View>
@@ -286,8 +286,6 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
 }
 
 export default ExpandableBetTabBar;
-
-const AnimatedMaterialIcon = Animated.createAnimatedComponent(MaterialIcons);
 
 function NavButton({
   active,
@@ -300,10 +298,8 @@ function NavButton({
   label: string;
   onPress: () => void;
 }) {
-  const iconColorStyle = useAnimatedThemeColor(
-    active ? '#ffb24f' : '#9da3a8',
-    active ? '#e99a25' : '#697078',
-  );
+  const { isDark } = useAppTheme();
+  const iconColor = active ? (isDark ? '#fafafa' : '#18181b') : (isDark ? '#a1a1aa' : '#71717a');
   const progress = useSharedValue(active ? 1 : 0);
 
   useEffect(() => {
@@ -317,7 +313,7 @@ function NavButton({
   return (
     <Pressable accessibilityLabel={label} accessibilityRole="button" onPress={onPress} style={styles.navButton}>
       <Animated.View style={iconWrapStyle}>
-        <AnimatedMaterialIcon name={icon} size={20} style={iconColorStyle} />
+        <MaterialIcons name={icon} size={20} color={iconColor} />
       </Animated.View>
     </Pressable>
   );
@@ -333,9 +329,6 @@ const styles = StyleSheet.create({
   },
   surface: {
     alignItems: 'center',
-    backgroundColor: '#23262a',
-    borderColor: 'rgba(255, 255, 255, 0.06)',
-    borderWidth: 1,
     justifyContent: 'flex-end',
     overflow: 'visible',
     position: 'relative',
@@ -377,7 +370,7 @@ const styles = StyleSheet.create({
     width: 42,
   },
   panel: {
-    backgroundColor: '#23262a',
+    backgroundColor: '#18181b',
     borderColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: 28,
     borderWidth: 1,
@@ -434,10 +427,10 @@ const styles = StyleSheet.create({
     height: 4,
   },
   stepSegmentActive: {
-    backgroundColor: '#ffb24f',
+    backgroundColor: '#fafafa',
   },
   helperText: {
-    color: '#ffb24f',
+    color: '#fafafa',
     fontSize: 14,
     fontWeight: '900',
     marginBottom: 12,
@@ -457,7 +450,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   threeShortcutText: {
-    color: '#ffb24f',
+    color: '#fafafa',
     fontSize: 13,
     fontWeight: '900',
   },
@@ -483,7 +476,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   leagueChipSelected: {
-    backgroundColor: '#ffb24f',
+    backgroundColor: '#fafafa',
   },
   leagueText: {
     color: appColors.text,
@@ -495,7 +488,7 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     alignItems: 'center',
-    backgroundColor: '#ffb24f',
+    backgroundColor: '#fafafa',
     borderRadius: 23,
     flexDirection: 'row',
     height: 50,
@@ -515,7 +508,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignItems: 'center',
-    backgroundColor: '#ffb24f',
+    backgroundColor: '#fafafa',
     flexDirection: 'row',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -533,7 +526,7 @@ const styles = StyleSheet.create({
   },
   navPill: {
     alignItems: 'center',
-    backgroundColor: '#23262a',
+    backgroundColor: '#18181b',
     borderRadius: 28,
     flexDirection: 'row',
     gap: 8,
@@ -550,7 +543,7 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     alignItems: 'center',
-    backgroundColor: '#ffb24f',
+    backgroundColor: '#fafafa',
     borderRadius: 21,
     height: 42,
     justifyContent: 'center',

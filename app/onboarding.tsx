@@ -1,8 +1,9 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
 import { Canvas, Circle } from '@shopify/react-native-skia';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -20,19 +21,19 @@ const slides = [
     title: 'Motion em primeiro plano',
     text: 'Uma experiência de onboarding onde cada gesto revela uma nova camada da interface.',
     icon: 'auto-awesome-motion' as const,
-    color: '#f09ad6',
+    color: '#d4d4d4',
   },
   {
     title: 'Profundidade em cada gesto',
     text: 'Cards que inclinam, escalam e se movem com o dedo para criar uma transição mais natural.',
     icon: '3d-rotation' as const,
-    color: '#8da2ff',
+    color: '#8a8a8a',
   },
   {
     title: 'Explora o showcase',
     text: 'Experimenta botões, gestos, números e uma cena 3D num único espaço interativo.',
     icon: 'play-circle-outline' as const,
-    color: '#f6d088',
+    color: '#fafafa',
   },
 ];
 
@@ -83,10 +84,11 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.screen}>
+      <AnimatedGradientBackground />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <View style={styles.brandMark}>
-            <MaterialIcons name="auto-awesome-motion" size={22} color="#171219" />
+            <MaterialIcons name="auto-awesome-motion" size={22} color="#09090b" />
           </View>
           <Pressable accessibilityRole="button" onPress={goHome} style={styles.skipButton}>
             <Text style={styles.skipText}>Skip</Text>
@@ -95,10 +97,10 @@ export default function OnboardingScreen() {
 
         <View style={styles.glowArea}>
           <Animated.View style={[styles.bottomGlow, glowStyle]} />
-          <Canvas style={styles.skiaGlow}>
+          {Platform.OS !== 'web' && <Canvas style={styles.skiaGlow}>
             <Circle cx={width / 2} cy={94} r={glowRadius} color={slides[activeIndex].color} opacity={0.26} />
             <Circle cx={width / 2 + 34} cy={116} r={28} color="#ffffff" opacity={0.12} />
-          </Canvas>
+          </Canvas>}
 
           <GestureDetector gesture={pan}>
             <Animated.View style={[styles.track, { width: width * slides.length }, trackStyle]}>
@@ -165,7 +167,7 @@ function SlideCard({
   return (
     <Animated.View style={[styles.slide, { width }, cardStyle]}>
       <View style={[styles.slideIcon, { backgroundColor: slide.color }]}>
-        <MaterialIcons name={slide.icon} size={30} color="#171219" />
+        <MaterialIcons name={slide.icon} size={30} color="#09090b" />
       </View>
       <Text style={styles.slideEyebrow}>REACT NATIVE ANIMATION</Text>
       <Text style={styles.title}>{slide.title}</Text>
@@ -179,7 +181,7 @@ function SlideCard({
       {isLast && (
         <AnimatedPressable onPress={onFinish} style={[styles.startButton, { backgroundColor: slide.color }, buttonStyle]}>
           <Text style={styles.startButtonText}>Start exploring</Text>
-          <MaterialIcons name="arrow-forward" size={20} color="#171219" />
+          <MaterialIcons name="arrow-forward" size={20} color="#09090b" />
         </AnimatedPressable>
       )}
     </Animated.View>
@@ -197,30 +199,30 @@ function PaginationDot({ index, page, color }: { index: number; page: SharedValu
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: '#17191c', flex: 1 },
+  screen: { backgroundColor: '#09090b', flex: 1 },
   safeArea: { flex: 1 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', padding: 20 },
-  brandMark: { alignItems: 'center', backgroundColor: '#f09ad6', borderRadius: 17, height: 42, justifyContent: 'center', width: 42 },
+  brandMark: { alignItems: 'center', backgroundColor: '#d4d4d4', borderRadius: 17, height: 42, justifyContent: 'center', width: 42 },
   skipButton: { borderColor: 'rgba(255,255,255,0.14)', borderRadius: 18, borderWidth: 1, paddingHorizontal: 15, paddingVertical: 8 },
-  skipText: { color: '#f5f5f5', fontSize: 13, fontWeight: '800' },
+  skipText: { color: '#fafafa', fontSize: 13, fontWeight: '800' },
   glowArea: { flex: 1, justifyContent: 'center', overflow: 'hidden' },
   bottomGlow: { borderRadius: 180, height: 360, left: '50%', marginLeft: -180, position: 'absolute', top: '50%', width: 360 },
   skiaGlow: { height: 190, position: 'absolute', top: '50%', width: '100%' },
   track: { alignItems: 'center', flexDirection: 'row' },
   slide: { alignItems: 'center', paddingHorizontal: 34 },
   slideIcon: { alignItems: 'center', borderRadius: 28, height: 58, justifyContent: 'center', marginBottom: 20, width: 58 },
-  slideEyebrow: { color: '#f6d088', fontSize: 11, fontWeight: '900', letterSpacing: 1.3, textAlign: 'center' },
-  title: { color: '#f5f5f5', fontSize: 34, fontWeight: '900', lineHeight: 38, marginTop: 9, textAlign: 'center' },
-  text: { color: '#9da3a8', fontSize: 15, lineHeight: 22, marginTop: 14, maxWidth: 330, textAlign: 'center' },
-  cardPreview: { backgroundColor: '#23262a', borderColor: 'rgba(255,255,255,0.1)', borderRadius: 24, borderWidth: 1, height: 150, marginTop: 28, overflow: 'hidden', padding: 18, width: '100%' },
-  previewTop: { alignSelf: 'center', backgroundColor: '#697078', borderRadius: 3, height: 6, width: 48 },
+  slideEyebrow: { color: '#fafafa', fontSize: 11, fontWeight: '900', letterSpacing: 1.3, textAlign: 'center' },
+  title: { color: '#fafafa', fontSize: 34, fontWeight: '900', lineHeight: 38, marginTop: 9, textAlign: 'center' },
+  text: { color: '#a1a1aa', fontSize: 15, lineHeight: 22, marginTop: 14, maxWidth: 330, textAlign: 'center' },
+  cardPreview: { backgroundColor: '#18181b', borderColor: 'rgba(255,255,255,0.1)', borderRadius: 24, borderWidth: 1, height: 150, marginTop: 28, overflow: 'hidden', padding: 18, width: '100%' },
+  previewTop: { alignSelf: 'center', backgroundColor: '#71717a', borderRadius: 3, height: 6, width: 48 },
   previewOrb: { borderRadius: 38, height: 76, marginTop: 18, opacity: 0.8, width: 76 },
-  previewLineLong: { backgroundColor: '#f5f5f5', borderRadius: 4, height: 8, marginTop: 12, width: '70%' },
-  previewLineShort: { backgroundColor: '#697078', borderRadius: 4, height: 8, marginTop: 8, width: '44%' },
+  previewLineLong: { backgroundColor: '#fafafa', borderRadius: 4, height: 8, marginTop: 12, width: '70%' },
+  previewLineShort: { backgroundColor: '#71717a', borderRadius: 4, height: 8, marginTop: 8, width: '44%' },
   startButton: { alignItems: 'center', borderRadius: 18, flexDirection: 'row', gap: 8, justifyContent: 'center', marginTop: 24, paddingHorizontal: 20, paddingVertical: 14 },
-  startButtonText: { color: '#171219', fontSize: 15, fontWeight: '900' },
+  startButtonText: { color: '#09090b', fontSize: 15, fontWeight: '900' },
   footer: { alignItems: 'center', gap: 14, padding: 24 },
   pagination: { alignItems: 'center', flexDirection: 'row', gap: 10, height: 12 },
   dot: { borderRadius: 4, height: 8, width: 12 },
-  swipeHint: { color: '#697078', fontSize: 12, fontWeight: '800' },
+  swipeHint: { color: '#71717a', fontSize: 12, fontWeight: '800' },
 });

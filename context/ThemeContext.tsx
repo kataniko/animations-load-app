@@ -1,30 +1,31 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
-import { Animated, Dimensions, Easing, StyleSheet, View } from 'react-native';
+import { appColors } from '@/constants/AppColors';
+import { Animated, Dimensions, Easing, StyleSheet } from 'react-native';
 import { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
 
 const palette = {
   dark: {
     mode: 'dark' as const,
-    background: '#17191c',
-    surface: '#23262a',
-    surfaceElevated: '#2d3237',
-    text: '#f5f5f5',
-    textMuted: '#9da3a8',
-    border: 'rgba(255,255,255,0.10)',
-    accent: '#ffb24f',
-    accentText: '#17191c',
+    background: appColors.background,
+    surface: appColors.surface,
+    surfaceElevated: appColors.surfaceElevated,
+    text: appColors.primary,
+    textMuted: appColors.secondary,
+    border: appColors.border,
+    accent: appColors.accentBlue,
+    accentText: '#ffffff',
   },
   light: {
     mode: 'light' as const,
-    background: '#f5f5f5',
+    background: '#ffffff',
     surface: '#ffffff',
-    surfaceElevated: '#ffffff',
-    text: '#17191c',
-    textMuted: '#697078',
-    border: 'rgba(23,25,28,0.12)',
-    accent: '#e99a25',
-    accentText: '#ffffff',
+    surfaceElevated: '#fafafa',
+    text: '#18181b',
+    textMuted: '#71717a',
+    border: '#e4e4e7',
+    accent: '#18181b',
+    accentText: '#fafafa',
   },
 };
 
@@ -161,10 +162,10 @@ export function ThemeTransition({
       Animated.delay(80).start(() => {
         onApply(nextIsDark);
         Animated.sequence([
-          Animated.delay(100),
+          Animated.delay(180),
           Animated.timing(opacity, {
             toValue: 0,
-            duration: 100,
+            duration: 700,
             useNativeDriver: true,
           }),
         ]).start(onFinish);
@@ -175,7 +176,7 @@ export function ThemeTransition({
   return (
     <Animated.View pointerEvents="none" style={[styles.modal, { opacity }]}>
         <Animated.View
-          style={[styles.drop, { backgroundColor: color, left: x - 20, top: y - 20, transform: [{ scale }] }]}
+          style={[styles.drop, { backgroundColor: color, left: x - 20, opacity: 0.32, top: y - 20, transform: [{ scale }] }]}
         />
       </Animated.View>
   );
