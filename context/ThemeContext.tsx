@@ -1,31 +1,31 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { appColors } from '@/constants/AppColors';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet } from 'react-native';
-import { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import type { SharedValue } from 'react-native-reanimated';
+import { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-const palette = {
+export const palette = {
   dark: {
     mode: 'dark' as const,
     background: appColors.background,
-    surface: appColors.surface,
-    surfaceElevated: appColors.surfaceElevated,
-    text: appColors.primary,
-    textMuted: appColors.secondary,
-    border: appColors.border,
-    accent: appColors.accentBlue,
+    surface: '#172235',
+    surfaceElevated: '#283952',
+    text: '#f1f5ff',
+    textMuted: '#c1cee0',
+    border: '#56708d',
+    accent: '#2563eb',
     accentText: '#ffffff',
   },
   light: {
     mode: 'light' as const,
-    background: '#ffffff',
-    surface: '#ffffff',
-    surfaceElevated: '#fafafa',
-    text: '#18181b',
-    textMuted: '#71717a',
-    border: '#e4e4e7',
-    accent: '#18181b',
-    accentText: '#fafafa',
+    background: '#eff4fb',
+    surface: '#f8fbff',
+    surfaceElevated: '#e0eafa',
+    text: '#1d304e',
+    textMuted: '#4a6080',
+    border: '#adc0dc',
+    accent: '#245aca',
+    accentText: '#ffffff',
   },
 };
 
@@ -58,6 +58,7 @@ export function AppThemeProvider({ children }: PropsWithChildren) {
   const applyTransitionTheme = useCallback((nextIsDark: boolean) => {
     setIsDark(nextIsDark);
   }, []);
+
   const finishTransition = useCallback(() => setDrop(null), []);
 
   useEffect(() => {
@@ -175,10 +176,10 @@ export function ThemeTransition({
 
   return (
     <Animated.View pointerEvents="none" style={[styles.modal, { opacity }]}>
-        <Animated.View
-          style={[styles.drop, { backgroundColor: color, left: x - 20, opacity: 0.32, top: y - 20, transform: [{ scale }] }]}
-        />
-      </Animated.View>
+      <Animated.View
+        style={[styles.drop, { backgroundColor: color, left: x - 20, opacity: 0.32, top: y - 20, transform: [{ scale }] }]}
+      />
+    </Animated.View>
   );
 }
 

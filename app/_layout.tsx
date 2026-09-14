@@ -1,17 +1,21 @@
+import { MaskedSplashScreen } from '@/shared/splash/MaskedSplashScreen';
+import { AppThemeProvider, useAppTheme } from '@/context/ThemeContext';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import 'react-native-reanimated';
-
-import { MaskedSplashScreen } from '@/components/MaskedSplashScreen';
-import { AppThemeProvider } from '@/context/ThemeContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
+
+function ThemeStatusBar() {
+  const { isDark } = useAppTheme();
+  return <StatusBar style={isDark ? 'light' : 'dark'} />;
+}
 
 export default function RootLayout() {
   const [showAnimatedSplash, setShowAnimatedSplash] = useState(true);
@@ -30,7 +34,6 @@ export default function RootLayout() {
   }, []);
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
@@ -39,13 +42,16 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AppThemeProvider>
           <ThemeProvider value={DarkTheme}>
-        <Stack initialRouteName="onboarding">
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        {showAnimatedSplash && Platform.OS !== 'web' && <MaskedSplashScreen onFinish={handleSplashFinish} />}
-        <StatusBar style="light" />
+            <Stack initialRouteName="onboarding">
+              <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="library/[id]" options={{ headerShown: false }} />
+              <Stack.Screen name="presentation" options={{ headerShown: false }} />
+              <Stack.Screen name="exercises" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            {showAnimatedSplash && Platform.OS !== 'web' && <MaskedSplashScreen onFinish={handleSplashFinish} />}
+            <ThemeStatusBar />
           </ThemeProvider>
         </AppThemeProvider>
       </SafeAreaProvider>

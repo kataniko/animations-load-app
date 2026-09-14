@@ -1,6 +1,7 @@
+import { ProfileStat } from '@/components/profile/ProfileStat';
+import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
+import { GlassCard } from '@/shared/glass/GlassCard';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
-import { GlassCard } from '@/components/GlassCard';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
@@ -8,34 +9,26 @@ export default function ProfileScreen() {
     <View style={styles.background}>
       <AnimatedGradientBackground />
       <SafeAreaView style={styles.screen}>
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.cover} />
           <GlassCard style={styles.profileCard}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>L</Text>
+              <Text style={styles.avatarText}>RN</Text>
             </View>
-            <Text style={styles.name}>Animation Showcase</Text>
-            <Text style={styles.handle}>@motionlab</Text>
+            <Text style={styles.name}>Motion Engineer</Text>
+            <Text style={styles.handle}>@animations-load-app</Text>
             <Text style={styles.bio}>
-              Área de demonstração para explorar header collapse, métricas, tabs internas e entradas animadas.
+              Mobile UI motion patterns built with React Native, Reanimated, and Skia.
             </Text>
+
             <View style={styles.statsRow}>
-              <Stat value="128" label="Following" />
-              <Stat value="9.8K" label="Followers" />
-              <Stat value="42" label="Shots" />
+              <ProfileStat value="18" label="Prototypes" />
+              <ProfileStat value="60" label="Target FPS" />
+              <ProfileStat value="42" label="Shots" />
             </View>
           </GlassCard>
         </ScrollView>
       </SafeAreaView>
-    </View>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
 }
@@ -93,29 +86,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   bio: {
-    color: '#dedede',
-    fontSize: 15,
-    fontWeight: '500',
-    lineHeight: 22,
-    marginTop: 14,
+    color: '#d4d4d8',
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 12,
   },
   statsRow: {
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderTopWidth: 1,
     flexDirection: 'row',
-    gap: 18,
-    marginTop: 18,
-  },
-  stat: {
-    minWidth: 72,
-  },
-  statValue: {
-    color: '#fafafa',
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  statLabel: {
-    color: '#a3a3a3',
-    fontSize: 12,
-    fontWeight: '700',
-    marginTop: 2,
+    justifyContent: 'space-around',
+    marginTop: 20,
+    paddingTop: 16,
   },
 });

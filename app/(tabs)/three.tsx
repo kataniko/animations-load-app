@@ -1,147 +1,165 @@
-/* eslint-disable react/no-unknown-property */
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Canvas, useFrame } from '@react-three/fiber/native';
-import { router } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppTheme } from '@/context/ThemeContext';
-import type { Group, Mesh } from 'three';
-
+import { MotionScene } from '@/components/three/MotionScene';
 import { appColors } from '@/constants/AppColors';
-import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
+import { useAppTheme } from '@/context/ThemeContext';
+import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Canvas } from '@react-three/fiber/native';
+import { router, useIsFocused } from 'expo-router';
+import { Suspense, useRef, useState } from 'react';
+import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const particleCount = 34;
+export default function ThreeScreen() {
+  const [isTurbo, setIsTurbo] = useState(true);
+  const [wireframe, setWireframe] = useState(false);
+  const [stopped, setStopped] = useState(false);
+  const [zoom, setZoom] = useState(4.4);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
 
-export default function ThreeLabScreen() {
-  const [isTurbo, setIsTurbo] = useState(false);
+  const focused = useIsFocused();
   const { theme } = useAppTheme();
 
-  if (Platform.OS === 'web') {
-    return (
-      <View style={[styles.screen, { backgroundColor: theme.background }]}>
-        <AnimatedGradientBackground />
-        <SafeAreaView style={styles.overlay}>
-          <Text style={[styles.title, { color: theme.text }]}>Motion Orb</Text>
-          <Text style={[styles.infoLabel, { color: theme.textMuted }]}>A cena 3D está disponível no iOS e Android.</Text>
-        </SafeAreaView>
-      </View>
-    );
-  }
+  // Gesture tracking refs
+  const initialPinchDistance = useRef<number | null>(null);
+  const initialZoom = useRef<number>(4.4);
+  const zoomRef = useRef<number>(4.4);
+  const lastTouch = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        const touches = evt.nativeEvent.touches;
+        if (touches.length === 1) {
+          lastTouch.current = { x: touches[0].pageX, y: touches[0].pageY };
+        } else if (touches.length >= 2) {
+          const dx = touches[0].pageX - touches[1].pageX;
+          const dy = touches[0].pageY - touches[1].pageY;
+          initialPinchDistance.current = Math.sqrt(dx * dx + dy * dy);
+          initialZoom.current = zoomRef.current;
+        }
+      },
+      onPanResponderMove: (evt) => {
+        const touches = evt.nativeEvent.touches;
+        if (touches.length === 1) {
+          // One finger: rotate
+          const dx = touches[0].pageX - lastTouch.current.x;
+          const dy = touches[0].pageY - lastTouch.current.y;
+          lastTouch.current = { x: touches[0].pageX, y: touches[0].pageY };
+
+          setRotation((prev) => ({
+            x: Math.max(-0.8, Math.min(0.8, prev.x + dy * 0.008)),
+            y: prev.y + dx * 0.01,
+          }));
+        } else if (touches.length >= 2 && initialPinchDistance.current !== null) {
+          // Two fingers: pinch to zoom
+          const dx = touches[0].pageX - touches[1].pageX;
+          const dy = touches[0].pageY - touches[1].pageY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const ratio = initialPinchDistance.current / distance;
+          const newZoom = Math.max(1.8, Math.min(8.5, initialZoom.current * ratio));
+          zoomRef.current = newZoom;
+          setZoom(newZoom);
+        }
+      },
+      onPanResponderRelease: () => {
+        initialPinchDistance.current = null;
+      },
+    }),
+  ).current;
 
   return (
-    <View style={[styles.screen, { backgroundColor: theme.background }]}> 
+    <View style={styles.screen}>
       <AnimatedGradientBackground />
-      <Canvas
-        camera={{ fov: 48, position: [0, 0.25, 6.2] }}
-        gl={{ alpha: true, antialias: true }}
-        style={styles.canvas}>
-        <ambientLight intensity={0.55} />
-        <directionalLight color="#fafafa" intensity={2.2} position={[3.2, 4.4, 5]} />
-        <pointLight color={appColors.primary} intensity={28} position={[-3.2, 1.2, 3.4]} />
-        <pointLight color={appColors.secondary} intensity={16} position={[2.8, -1.4, 3.2]} />
-        <MotionScene isTurbo={isTurbo} />
-      </Canvas>
+      {focused && !stopped ? (
+        <View style={StyleSheet.absoluteFill} {...panResponder.panHandlers}>
+          <Canvas
+            camera={{ position: [0, 0.4, zoom], fov: 46 }}
+            gl={{ antialias: false }}
+            style={styles.canvas}
+          >
+            <ambientLight intensity={0.8} />
+            <directionalLight position={[3, 5, 4]} intensity={1.5} />
+            <directionalLight position={[-3, 2, -3]} intensity={0.6} />
+            <pointLight position={[0, -2, 2]} intensity={0.5} color={appColors.secondary} />
+            <Suspense fallback={null}>
+              <MotionScene
+                isTurbo={isTurbo}
+                paused={false}
+                rotationOffset={rotation}
+                wireframe={wireframe}
+              />
+            </Suspense>
+          </Canvas>
+        </View>
+      ) : (
+        <View style={[styles.canvas, styles.pausedCanvas]}>
+          <Text style={[styles.pausedText, { color: theme.textMuted }]}>
+            Scene paused to save battery and GPU.
+          </Text>
+        </View>
+      )}
 
       <SafeAreaView pointerEvents="box-none" style={styles.overlay}>
         <View style={styles.topBar}>
-          <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.iconButton}>
-            <MaterialIcons name="keyboard-arrow-left" size={28} color={theme.text} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/explore'))}
+            style={styles.iconButton}
+          >
+            <MaterialIcons name="arrow-back" size={24} color={appColors.primary} />
           </Pressable>
-          <View style={styles.titleBlock}>
-            <Text style={styles.kicker}>React Three Fiber Native</Text>
-            <Text style={[styles.title, { color: theme.text }]}>Motion Orb</Text>
+          <View style={styles.titleGroup}>
+            <Text style={styles.kicker}>R3F ENGINE</Text>
+            <Text style={styles.title}>Mercedes-AMG A45</Text>
           </View>
-          <Pressable accessibilityRole="button" onPress={() => setIsTurbo((current) => !current)} style={styles.iconButton}>
-            <MaterialIcons name={isTurbo ? 'flash-on' : 'flash-off'} size={22} color={appColors.primary} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={stopped ? 'Resume scene' : 'Pause scene'}
+            onPress={() => setStopped((current) => !current)}
+            style={styles.iconButton}
+          >
+            <MaterialIcons
+              name={stopped ? 'play-arrow' : 'pause'}
+              size={22}
+              color={appColors.primary}
+            />
           </Pressable>
         </View>
 
-        <View style={styles.infoPanel}>
+        <View style={styles.bottomBar}>
           <View>
-            <Text style={styles.infoLabel}>Scene status</Text>
-            <Text style={[styles.infoTitle, { color: theme.text }]}>{isTurbo ? 'Turbo orbit' : 'Soft orbit'}</Text>
+            <Text style={styles.infoLabel}>CONTROLS</Text>
+            <Text style={styles.infoTitle}>Drag / Pinch</Text>
           </View>
-          <Pressable accessibilityRole="button" onPress={() => setIsTurbo((current) => !current)} style={[styles.modeButton, { backgroundColor: theme.accent }]}>
-            <MaterialIcons name="blur-circular" size={20} color="#171717" />
-            <Text style={styles.modeText}>{isTurbo ? 'Calm' : 'Boost'}</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: wireframe }}
+            onPress={() => setWireframe((current) => !current)}
+            style={styles.iconButton}
+            accessibilityLabel="Toggle wireframe"
+          >
+            <MaterialIcons
+              name={wireframe ? 'grid-on' : 'grid-off'}
+              size={22}
+              color={appColors.primary}
+            />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setIsTurbo((current) => !current)}
+            style={[styles.modeButton, { backgroundColor: theme.accent }]}
+          >
+            <MaterialIcons name="blur-circular" size={20} color={theme.accentText} />
+            <Text style={[styles.modeText, { color: theme.accentText }]}>
+              {isTurbo ? 'Calm' : 'Boost'}
+            </Text>
           </Pressable>
         </View>
       </SafeAreaView>
     </View>
-  );
-}
-
-function MotionScene({ isTurbo }: { isTurbo: boolean }) {
-  const group = useRef<Group>(null);
-  const core = useRef<Mesh>(null);
-  const ring = useRef<Mesh>(null);
-  const speed = isTurbo ? 1.35 : 0.62;
-  const particles = useMemo(
-    () =>
-      Array.from({ length: particleCount }, (_, index) => {
-        const angle = (index / particleCount) * Math.PI * 2;
-        const lane = index % 3;
-        const radius = 1.9 + lane * 0.52;
-
-        return {
-          angle,
-          color: lane === 0 ? appColors.primary : lane === 1 ? appColors.primary : appColors.secondary,
-          radius,
-          scale: 0.035 + (index % 5) * 0.008,
-          y: (index % 7) * 0.18 - 0.54,
-        };
-      }),
-    []
-  );
-
-  useFrame((state, delta) => {
-    const elapsed = state.clock.getElapsedTime();
-
-    if (group.current) {
-      group.current.rotation.y += delta * speed;
-      group.current.rotation.x = Math.sin(elapsed * 0.38) * 0.16;
-    }
-
-    if (core.current) {
-      core.current.rotation.x += delta * (0.52 + speed * 0.35);
-      core.current.rotation.y -= delta * (0.44 + speed * 0.3);
-      const pulse = 1 + Math.sin(elapsed * 2.1) * 0.045;
-      core.current.scale.setScalar(pulse);
-    }
-
-    if (ring.current) {
-      ring.current.rotation.z -= delta * (0.7 + speed * 0.46);
-      ring.current.rotation.x = Math.PI / 2.42 + Math.sin(elapsed * 0.7) * 0.16;
-    }
-  });
-
-  return (
-    <group ref={group}>
-      <mesh ref={core} position={[0, 0.06, 0]}>
-        <icosahedronGeometry args={[1.08, 4]} />
-        <meshStandardMaterial color={appColors.secondary} roughness={0.34} metalness={0.38} />
-      </mesh>
-
-      <mesh ref={ring} position={[0, 0.02, 0]}>
-        <torusKnotGeometry args={[1.58, 0.035, 164, 12, 2, 5]} />
-        <meshStandardMaterial color={appColors.text} roughness={0.22} metalness={0.64} />
-      </mesh>
-
-      {particles.map((particle, index) => (
-        <mesh
-          key={index}
-          position={[
-            Math.cos(particle.angle) * particle.radius,
-            particle.y,
-            Math.sin(particle.angle) * particle.radius,
-          ]}
-          scale={particle.scale}>
-          <sphereGeometry args={[1, 12, 12]} />
-          <meshStandardMaterial color={particle.color} emissive={particle.color} emissiveIntensity={0.42} />
-        </mesh>
-      ))}
-    </group>
   );
 }
 
@@ -152,6 +170,15 @@ const styles = StyleSheet.create({
   },
   canvas: {
     flex: 1,
+  },
+  pausedCanvas: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  pausedText: {
+    fontSize: 14,
+    textAlign: 'center',
   },
   overlay: {
     ...StyleSheet.absoluteFill,
@@ -172,60 +199,58 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 22,
     borderWidth: 1,
-    height: 44,
+    height: 48,
     justifyContent: 'center',
-    width: 44,
+    width: 48,
   },
-  titleBlock: {
-    flex: 1,
+  titleGroup: {
+    alignItems: 'center',
   },
   kicker: {
-    color: appColors.primary,
-    fontSize: 12,
+    color: appColors.accent,
+    fontSize: 10,
     fontWeight: '900',
-    letterSpacing: 0,
-    textTransform: 'uppercase',
+    letterSpacing: 1.6,
   },
   title: {
-    color: appColors.text,
-    fontSize: 28,
+    color: appColors.primary,
+    fontSize: 18,
     fontWeight: '900',
-    marginTop: 3,
+    marginTop: 2,
   },
-  infoPanel: {
+  bottomBar: {
     alignItems: 'center',
-    backgroundColor: 'rgba(16, 16, 16, 0.78)',
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 24,
+    backgroundColor: 'rgba(24, 24, 27, 0.85)',
+    borderColor: 'rgba(255, 255, 255, 0.14)',
+    borderRadius: 26,
     borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
   },
   infoLabel: {
-    color: appColors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
+    color: appColors.textMuted,
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1.4,
   },
   infoTitle: {
-    color: appColors.text,
-    fontSize: 18,
+    color: appColors.primary,
+    fontSize: 16,
     fontWeight: '900',
-    marginTop: 4,
+    marginTop: 2,
   },
   modeButton: {
     alignItems: 'center',
-    backgroundColor: appColors.primary,
     borderRadius: 18,
     flexDirection: 'row',
     gap: 6,
-    height: 42,
-    justifyContent: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
   modeText: {
-    color: '#171717',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '900',
   },
 });

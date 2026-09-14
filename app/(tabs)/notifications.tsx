@@ -1,14 +1,13 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
-import { GlassCard } from '@/components/GlassCard';
+import { NotificationAlertCard } from '@/components/notifications/NotificationAlertCard';
+import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
+import { ThemedText } from '@/shared/themed/ThemedText';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const alerts = [
-  'Mara gostou do teu slot de motion.',
-  'Load Studio mencionou-te numa thread de onboarding.',
-  'Tiago guardou o teu prototipo de composer.',
-  'Nova trend: animated tab indicator.',
+  'Skia custom shader ready for preview.',
+  'Frame rate stable at 60 FPS.',
+  'Presentation notes updated.',
 ];
 
 export default function NotificationsScreen() {
@@ -16,19 +15,18 @@ export default function NotificationsScreen() {
     <View style={styles.background}>
       <AnimatedGradientBackground />
       <SafeAreaView style={styles.screen}>
-        <Text style={styles.title}>Alerts</Text>
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          {alerts.map((alert, index) => (
-            <GlassCard key={alert} style={styles.alertRow}>
-              <View style={[styles.alertIcon, index === 0 && styles.alertIconHot]}>
-                <MaterialIcons name={index === 0 ? 'favorite' : 'bolt'} size={20} color="#fafafa" />
-              </View>
-              <View style={styles.alertCopy}>
-                <Text style={styles.alertText}>{alert}</Text>
-                <Text style={styles.alertTime}>{index + 1}h atras</Text>
-              </View>
-            </GlassCard>
-          ))}
+        <ScrollView contentContainerStyle={styles.content}>
+          <ThemedText type="title" style={styles.heading}>
+            Notifications
+          </ThemedText>
+          <ThemedText style={styles.subheading}>
+            Performance metrics and component updates.
+          </ThemedText>
+          <View style={styles.list}>
+            {alerts.map((alert) => (
+              <NotificationAlertCard key={alert} alert={alert} />
+            ))}
+          </View>
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -37,55 +35,29 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
     backgroundColor: '#09090b',
+    flex: 1,
   },
   screen: {
     backgroundColor: 'transparent',
     flex: 1,
   },
-  title: {
-    color: '#fafafa',
-    fontSize: 30,
-    fontWeight: '900',
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-  },
   content: {
-    gap: 12,
-    padding: 18,
-    paddingBottom: 30,
+    padding: 20,
+    paddingBottom: 32,
   },
-  alertRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: 12,
-    padding: 16,
-  },
-  alertIcon: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.42)',
-    borderRadius: 20,
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
-  },
-  alertIconHot: {
-    backgroundColor: '#d4d4d4',
-  },
-  alertCopy: {
-    flex: 1,
-  },
-  alertText: {
+  heading: {
     color: '#fafafa',
-    fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 22,
+    fontSize: 32,
+    fontWeight: '900',
   },
-  alertTime: {
+  subheading: {
     color: '#a3a3a3',
-    fontSize: 13,
-    fontWeight: '600',
-    marginTop: 5,
+    fontSize: 15,
+    marginTop: 6,
+  },
+  list: {
+    gap: 12,
+    marginTop: 20,
   },
 });

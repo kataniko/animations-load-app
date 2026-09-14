@@ -1,37 +1,38 @@
+import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { AnimatedGradientBackground } from '@/components/AnimatedGradientBackground';
 import { Canvas, Circle } from '@shopify/react-native-skia';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Platform, Pressable, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import type { SharedValue } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import Animated, {
   interpolate,
   interpolateColor,
-  runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import type { SharedValue } from 'react-native-reanimated';
 
 const slides = [
   {
-    title: 'Motion em primeiro plano',
-    text: 'Uma experiência de onboarding onde cada gesto revela uma nova camada da interface.',
+    title: 'Gesture & Motion',
+    text: 'Interactive UI transitions where physical gestures drive state changes.',
     icon: 'auto-awesome-motion' as const,
     color: '#d4d4d4',
   },
   {
-    title: 'Profundidade em cada gesto',
-    text: 'Cards que inclinam, escalam e se movem com o dedo para criar uma transição mais natural.',
+    title: 'Spring Physics',
+    text: 'Direct manipulation with natural spring dynamics and velocity preservation.',
     icon: '3d-rotation' as const,
     color: '#8a8a8a',
   },
   {
-    title: 'Explora o showcase',
-    text: 'Experimenta botões, gestos, números e uma cena 3D num único espaço interativo.',
+    title: 'Explore Patterns',
+    text: 'Interact with gestures, canvas shaders, number tickers, and 3D scenes.',
     icon: 'play-circle-outline' as const,
     color: '#fafafa',
   },
@@ -50,6 +51,7 @@ export default function OnboardingScreen() {
   const trackStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: -page.value * width }],
   }));
+
   const glowStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
       page.value,
@@ -75,7 +77,7 @@ export default function OnboardingScreen() {
       const next = Math.min(lastIndex, Math.max(0, Math.round(projected)));
       // eslint-disable-next-line react-hooks/immutability
       page.value = withSpring(next, { damping: 18, stiffness: 170, mass: 0.8 });
-      runOnJS(setActiveIndex)(next);
+      scheduleOnRN(setActiveIndex, next);
     });
 
   function goHome() {
@@ -94,14 +96,12 @@ export default function OnboardingScreen() {
             <Text style={styles.skipText}>Skip</Text>
           </Pressable>
         </View>
-
         <View style={styles.glowArea}>
           <Animated.View style={[styles.bottomGlow, glowStyle]} />
           {Platform.OS !== 'web' && <Canvas style={styles.skiaGlow}>
             <Circle cx={width / 2} cy={94} r={glowRadius} color={slides[activeIndex].color} opacity={0.26} />
             <Circle cx={width / 2 + 34} cy={116} r={28} color="#ffffff" opacity={0.12} />
           </Canvas>}
-
           <GestureDetector gesture={pan}>
             <Animated.View style={[styles.track, { width: width * slides.length }, trackStyle]}>
               {slides.map((slide, index) => (
@@ -118,7 +118,6 @@ export default function OnboardingScreen() {
             </Animated.View>
           </GestureDetector>
         </View>
-
         <View style={styles.footer}>
           <View style={styles.pagination}>
             {slides.map((slide, index) => (
