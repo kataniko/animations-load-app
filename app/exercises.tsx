@@ -110,7 +110,7 @@ export default function ExercisesScreen() {
               <View style={[styles.badgeDot, { backgroundColor: '#22c55e' }]} />
               <Text style={[styles.sectionLabel, { color: '#22c55e' }]}>TARGET PREVIEW</Text>
             </View>
-            <Text style={[styles.sectionHint, { color: theme.textMuted }]}>Tap + or drag</Text>
+        
           </View>
 
           <View style={[styles.stageCard, styles.previewCardShell, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -130,7 +130,7 @@ export default function ExercisesScreen() {
                 },
               ]}
             >
-              STUDENT WORK
+              YOUR WORKSPACE
             </Text>
             <View style={[styles.vsLine, { backgroundColor: theme.border }]} />
           </View>
@@ -139,18 +139,12 @@ export default function ExercisesScreen() {
           <View style={styles.sectionHeader}>
             <View style={styles.badgeRow}>
               <View style={[styles.badgeDot, { backgroundColor: '#eab308' }]} />
-              <Text style={[styles.sectionLabel, { color: '#eab308' }]}>YOUR WORKSPACE</Text>
+              <Text style={[styles.sectionLabel, { color: '#eab308' }]}>YOUR CODE</Text>
             </View>
-            <Text style={[styles.sectionHint, { color: theme.textMuted }]}>components/exercises/ExerciceTraining.tsx</Text>
           </View>
 
           <View style={[styles.stageCard, styles.previewCardShell, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <ExerciceTraining />
-
-            <View style={[styles.instructionBox, { backgroundColor: theme.surfaceElevated, borderColor: theme.border }]}>
-              <MaterialIcons name="terminal" size={18} color={theme.accent} />
-
-            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
