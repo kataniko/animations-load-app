@@ -1,5 +1,5 @@
-import { MaskedSplashScreen } from '@/shared/splash/MaskedSplashScreen';
 import { AppThemeProvider, useAppTheme } from '@/context/ThemeContext';
+import { MaskedSplashScreen } from '@/shared/splash/MaskedSplashScreen';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -48,6 +48,12 @@ export default function RootLayout() {
               <Stack.Screen name="library/[id]" options={{ headerShown: false }} />
               <Stack.Screen name="presentation" options={{ headerShown: false }} />
               <Stack.Screen name="exercises" options={{ headerShown: false }} />
+              <Stack.Screen name="three" options={{ headerShown: false }} />
+              <Stack.Screen name="buttons" options={{ headerShown: false }} />
+              <Stack.Screen name="gallery" options={{ headerShown: false }} />
+              <Stack.Screen name="search" options={{ headerShown: false }} />
+              <Stack.Screen name="profile" options={{ headerShown: false }} />
+              <Stack.Screen name="notifications" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>
             {showAnimatedSplash && Platform.OS !== 'web' && <MaskedSplashScreen onFinish={handleSplashFinish} />}

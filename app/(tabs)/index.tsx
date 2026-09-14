@@ -1,9 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { TodoList } from '@/components/home';
+import { TodoList } from '@/components/home/TodoList';
 import {
   ThemeTransition,
   useAnimatedThemeBackground,
@@ -13,10 +8,16 @@ import {
 } from '@/context/ThemeContext';
 import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
 import { GlassCard } from '@/shared/glass/GlassCard';
-import { Action, Copy } from '@/shared/showcase/Showcase';
+import { Action } from '@/shared/showcase/Showcase';
 import { AnimatedGradientText } from '@/shared/typography/AnimatedGradientText';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedMaterialIcon = Animated.createAnimatedComponent(MaterialIcons);
 
 export default function ShowcaseScreen() {
   const { theme, isDark, toggleTheme, transition, applyTransitionTheme, finishTransition } = useAppTheme();
@@ -26,6 +27,10 @@ export default function ShowcaseScreen() {
   const textStyle = useAnimatedThemeColor('#e4e4e7', '#09090b');
   const mutedStyle = useAnimatedThemeColor('#a1a1aa', '#71717a');
   const accentStyle = useAnimatedThemeColor('#fafafa', '#09090b');
+  const logoBackgroundStyle = useAnimatedThemeBackground('#d4d4d4', '#dbeafe');
+  const logoIconStyle = useAnimatedThemeColor('#09090b', '#1d304e');
+  const heroOrbStyle = useAnimatedThemeBackground('rgba(255, 255, 255, 0.75)', 'rgba(37, 99, 235, 0.18)');
+  const heroRingStyle = useAnimatedThemeBorder('#fafafa', '#245aca');
 
   return (
     <Animated.View style={[styles.screen, { backgroundColor: theme.background }, backgroundStyle]}>
@@ -37,7 +42,9 @@ export default function ShowcaseScreen() {
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <View style={styles.headerTop}>
-              <View style={styles.logo}><MaterialIcons name="auto-awesome-motion" size={24} color="#09090b" /></View>
+              <Animated.View style={[styles.logo, logoBackgroundStyle]}>
+                <AnimatedMaterialIcon name="auto-awesome-motion" size={24} style={logoIconStyle} />
+              </Animated.View>
               <AnimatedPressable accessibilityLabel="Toggle theme" accessibilityRole="button" onPress={(event) => toggleTheme({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })} style={[styles.themeButton, { backgroundColor: theme.surface, borderColor: theme.border }, surfaceStyle, borderStyle]}>
                 <MaterialIcons name={isDark ? 'light-mode' : 'dark-mode'} size={20} color={theme.accent} />
               </AnimatedPressable>
@@ -53,7 +60,8 @@ export default function ShowcaseScreen() {
             <GlassCard style={styles.hero}>
               <Animated.Text style={[styles.heroLabel, { color: theme.accent }, accentStyle]}>SHOWCASE</Animated.Text>
               <Animated.Text style={[styles.heroTitle, { color: theme.text }, textStyle]}>Fluid motion patterns & gestures</Animated.Text>
-              <View style={styles.heroOrb} /><View style={styles.heroRing} />
+              <Animated.View style={[styles.heroOrb, heroOrbStyle]} />
+              <Animated.View style={[styles.heroRing, heroRingStyle]} />
             </GlassCard>
           </Animated.View>
 

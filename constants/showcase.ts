@@ -61,7 +61,7 @@ export const libraries = [
     use: 'Interactive 3D models, scene backgrounds, and spatial UI elements.',
     caution: 'Heavy GPU cost; ensure canvas pauses when off-screen.',
     code: 'useFrame((_, delta) => {\n  mesh.current.rotation.y += delta * speed;\n});\n// delta keeps rotation frame-rate independent.',
-    source: 'app/(tabs)/three.tsx',
+    source: 'app/three.tsx',
   },
 ] as const;
 

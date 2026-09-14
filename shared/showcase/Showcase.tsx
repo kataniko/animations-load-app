@@ -1,10 +1,18 @@
+import {
+  useAnimatedThemeBackground,
+  useAnimatedThemeBorder,
+  useAnimatedThemeColor,
+  useAppTheme,
+} from '@/context/ThemeContext';
+import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import type { PropsWithChildren } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
-import { useAppTheme } from '@/context/ThemeContext';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function ShowcaseScreen({ title, eyebrow, children }: PropsWithChildren<{ title: string; eyebrow: string }>) {
   const { theme } = useAppTheme();
@@ -43,16 +51,34 @@ export function Panel({ title, children }: PropsWithChildren<{ title: string }>)
 export function Action({ label, onPress, selected, disabled = false }: {
   label: string; onPress: () => void; selected?: boolean; disabled?: boolean;
 }) {
-  const { theme } = useAppTheme();
+  const actionBackgroundStyle = useAnimatedThemeBackground('#283952', '#e0eafa');
+  const actionBorderStyle = useAnimatedThemeBorder('#56708d', '#adc0dc');
+  const actionTextStyle = useAnimatedThemeColor('#f1f5ff', '#1d304e');
+  const selectedBackgroundStyle = useAnimatedThemeBackground('#2563eb', '#245aca');
+  const selectedBorderStyle = useAnimatedThemeBorder('#2563eb', '#245aca');
+  const selectedTextStyle = useAnimatedThemeColor('#ffffff', '#ffffff');
   return (
-    <Pressable accessibilityRole="button" accessibilityState={{ selected, disabled }} disabled={disabled} onPress={onPress}
-      style={({ pressed }) => [showcaseStyles.action, {
-        backgroundColor: selected ? theme.accent : theme.surfaceElevated,
-        borderColor: selected ? theme.accent : theme.border,
-        opacity: disabled ? 0.4 : pressed ? 0.65 : 1,
-      }]}>
-      <Text style={[showcaseStyles.actionText, { color: selected ? theme.accentText : theme.text }]}>{label}</Text>
-    </Pressable>
+    <AnimatedPressable
+      accessibilityRole="button"
+      accessibilityState={{ selected, disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={[
+        showcaseStyles.action,
+        selected ? selectedBackgroundStyle : actionBackgroundStyle,
+        selected ? selectedBorderStyle : actionBorderStyle,
+        { opacity: disabled ? 0.4 : 1 },
+      ]}
+    >
+      <Animated.Text
+        style={[
+          showcaseStyles.actionText,
+          selected ? selectedTextStyle : actionTextStyle,
+        ]}
+      >
+        {label}
+      </Animated.Text>
+    </AnimatedPressable>
   );
 }
 

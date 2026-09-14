@@ -1,15 +1,15 @@
-import { AddGlow } from '@/shared/effects/AddGlow';
 import { appColors } from '@/constants/AppColors';
 import {
   useAnimatedThemeBackground,
   useAnimatedThemeColor,
   useAppTheme,
 } from '@/context/ThemeContext';
+import { AddGlow } from '@/shared/effects/AddGlow';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { BlurView } from 'expo-blur';
+import { BlurTargetView, BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -75,6 +75,7 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
   const currentStep = steps[step];
   const selectedOption = selectedOptions[step];
   const dragY = useSharedValue(0);
+  const blurTargetRef = useRef<View>(null);
 
   useEffect(() => {
     progress.value = withSpring(expanded ? 1 : 0, {
@@ -174,7 +175,11 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
 
   return (
     <View pointerEvents="box-none" style={[styles.wrapper, { paddingBottom: bottomInset }]}>
+      <BlurTargetView ref={blurTargetRef} pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <View className='size-full' />
+      </BlurTargetView>
       <Animated.View
+        collapsable={false}
         pointerEvents="auto"
         style={[
           styles.surface,
@@ -189,9 +194,11 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
       >
         <BlurView
           pointerEvents="none"
-          intensity={80}
+          intensity={100}
+          blurReductionFactor={1}
           tint={isDark ? 'dark' : 'light'}
-          blurMethod="dimezisBlurView"
+          blurMethod={Platform.OS === 'android' && Number(Platform.Version) >= 31 ? 'dimezisBlurViewSdk31Plus' : 'dimezisBlurView'}
+          blurTarget={blurTargetRef}
           style={[StyleSheet.absoluteFill, styles.blur]}
         />
         <Animated.View pointerEvents={expanded ? 'none' : 'auto'} style={[styles.compactNav, compactNavStyle]}>
@@ -294,7 +301,7 @@ function ExpandableBetTabBar({ state, descriptors, navigation }: ExpandableBetTa
 
             closePanel();
             if (selectedOptions[0] === '3D scene') {
-              router.push('/(tabs)/three' as const);
+              router.push('/three' as const);
             } else {
               router.push('/(tabs)/explore' as const);
             }
@@ -366,6 +373,23 @@ const styles = StyleSheet.create({
   blur: {
     borderRadius: 24,
     overflow: 'hidden',
+  },
+  blurShape: {
+    borderRadius: 999,
+    opacity: 0.32,
+    position: 'absolute',
+  },
+  blurShapeAccent: {
+    height: 150,
+    left: 18,
+    top: 18,
+    width: 150,
+  },
+  blurShapeSecondary: {
+    bottom: 18,
+    height: 130,
+    right: 24,
+    width: 180,
   },
   compactNav: {
     alignItems: 'center',

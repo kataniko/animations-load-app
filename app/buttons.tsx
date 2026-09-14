@@ -1,3 +1,8 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router, useIsFocused } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedNumberDemo } from '@/components/buttons/AnimatedNumberDemo';
 import { DemoPanel } from '@/components/buttons/DemoPanel';
 import { IconButton } from '@/components/buttons/IconButton';
@@ -13,11 +18,6 @@ import {
 import { AnimatedGradientBackground } from '@/shared/backgrounds/AnimatedGradientBackground';
 import { Action } from '@/shared/showcase/Showcase';
 import { AnimatedGradientText } from '@/shared/typography/AnimatedGradientText';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router, useIsFocused } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

@@ -149,9 +149,7 @@ export default function ExercisesScreen() {
 
             <View style={[styles.instructionBox, { backgroundColor: theme.surfaceElevated, borderColor: theme.border }]}>
               <MaterialIcons name="terminal" size={18} color={theme.accent} />
-              <Text style={[styles.instructionText, { color: theme.textMuted }]}>
-                Edit <Text style={{ fontFamily: 'SpaceMono', color: theme.text }}>components/exercises/ExerciceTraining.tsx</Text> to implement the animations.
-              </Text>
+
             </View>
           </View>
         </ScrollView>

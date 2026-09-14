@@ -23,24 +23,6 @@ export default function TabLayout() {
           title: 'Libraries',
         }}
       />
-      <Tabs.Screen
-        name="three"
-        options={{
-          title: '3D',
-        }}
-      />
-      <Tabs.Screen
-        name="buttons"
-        options={{
-          title: 'Buttons',
-        }}
-      />
-      <Tabs.Screen
-        name="gallery"
-        options={{
-          title: 'Gallery',
-        }}
-      />
     </Tabs>
   );
 }

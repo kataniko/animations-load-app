@@ -41,15 +41,15 @@ export default function LabScreen() {
           <Copy>Original standalone playgrounds grouped by topic.</Copy>
           <Action
             label="Buttons & Numbers"
-            onPress={() => router.push('/(tabs)/buttons')}
+            onPress={() => router.push('/buttons')}
           />
           <Action
             label="Gallery & Gestures"
-            onPress={() => router.push('/(tabs)/gallery')}
+            onPress={() => router.push('/gallery')}
           />
           <Action
             label="Three.js 3D Scene"
-            onPress={() => router.push('/(tabs)/three')}
+            onPress={() => router.push('/three')}
           />
         </ScrollView>
       </SafeAreaView>

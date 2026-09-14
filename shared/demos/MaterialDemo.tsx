@@ -1,11 +1,11 @@
+import { appColors } from '@/constants/AppColors';
+import { useAppTheme } from '@/context/ThemeContext';
+import { Action, Copy, showcaseStyles as s } from '@/shared/showcase/Showcase';
 import { BlurTargetView, BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { appColors } from '@/constants/AppColors';
-import { useAppTheme } from '@/context/ThemeContext';
-import { Action, Copy, showcaseStyles as s } from '@/shared/showcase/Showcase';
 
 export function MaterialDemo() {
   const { theme, isDark } = useAppTheme();
